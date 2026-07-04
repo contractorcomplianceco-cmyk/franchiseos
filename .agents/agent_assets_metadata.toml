@@ -42,3 +42,9 @@ id = "9y5lkDIfJBJx71KbJ-Pl9"
 uri = "file://artifacts/demo/public/audio/bg_music.mp3"
 type = "audio"
 title = "background music"
+
+[[outputs]]
+id = "gd-UwzDaW4kvDjocxPCrt"
+uri = "file://HANDOFF.md"
+type = "text"
+title = "FranchiseIntelligenceOS — Engineering Handoff (Cursor)"
