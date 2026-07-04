@@ -21,6 +21,8 @@ export * from './complianceCheckStatus';
 export * from './complianceCheckUpdate';
 export * from './complianceCheckUpdateStatus';
 export * from './conversation';
+export * from './currentUser';
+export * from './currentUserRole';
 export * from './dashboardSummary';
 export * from './document';
 export * from './documentInput';

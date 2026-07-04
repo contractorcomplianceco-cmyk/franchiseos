@@ -31,6 +31,18 @@ AI-powered franchise operations platform: track locations, licenses, compliance 
 - `artifacts/api-server/src/lib/serialize.ts` — Date→ISO-string serializer for Zod response parsing
 - `artifacts/franchise-os/src/pages/` — dashboard, locations, location-detail, compliance, tasks, expansion, documents, assistant
 
+## Auth & Roles
+
+- Clerk (Replit-managed whitelabel) handles authentication; keys are auto-provisioned env vars (`VITE_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, `VITE_CLERK_PROXY_URL`)
+- Server: `clerkProxyMiddleware` + `clerkMiddleware` in `app.ts`; `middlewares/auth.ts` has `requireAuth` (JIT-provisions a row in `users` table), `requireRole`, `requireWriter`, `requireAdmin`
+- Roles: `admin` / `manager` / `user` in `lib/db/src/schema/users.ts` — the first user to sign up becomes admin (atomic SQL CASE on insert)
+- Route gating in `routes/index.ts`: `/api/healthz` public; everything else requires auth; AI chat open to all authed users; DELETE requires admin; POST/PUT/PATCH requires manager or admin; role changes via direct DB update for now
+- `GET /api/me` returns the current user + role (`useGetCurrentUser` hook)
+- Frontend: `App.tsx` has canonical ClerkProvider wiring (publishableKeyFromHost, proxyUrl, `/sign-in/*?` routes, Show-gated routes); signed-out users see `pages/landing.tsx`; sidebar user menu in `layout.tsx` shows name/role + sign out
+- Role enforcement is server-side only — UI does not hide write actions; 403s surface as toast errors
+- AI conversations are owner-scoped: `conversations.userId` → `users.id`; all list/read/delete/chat queries filter by the current user (cross-user access returns 404)
+- First-admin bootstrap is serialized with a Postgres advisory transaction lock in `provisionUser` to prevent concurrent sign-ups both becoming admin
+
 ## Architecture decisions
 
 - Computed fields are server-side only: `Location.complianceScore` = avg of its compliance check scores (100 if none); `License.status` derived from expiryDate (expiring = within 30 days)

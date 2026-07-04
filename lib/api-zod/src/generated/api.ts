@@ -18,6 +18,17 @@ export const HealthCheckResponse = zod.object({
 
 
 /**
+ * @summary Get the current authenticated user
+ */
+export const GetCurrentUserResponse = zod.object({
+  "id": zod.number(),
+  "email": zod.string(),
+  "name": zod.string(),
+  "role": zod.enum(['admin', 'manager', 'user'])
+})
+
+
+/**
  * @summary List franchise locations
  */
 export const ListLocationsResponseItem = zod.object({

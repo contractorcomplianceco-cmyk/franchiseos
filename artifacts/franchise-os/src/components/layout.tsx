@@ -7,8 +7,59 @@ import {
   TrendingUp,
   FileText,
   MessageSquare,
+  LogOut,
 } from "lucide-react";
+import { useUser, useClerk } from "@clerk/react";
+import { useGetCurrentUser, getGetCurrentUserQueryKey } from "@workspace/api-client-react";
 import logoIcon from "@/assets/logo-icon.png";
+
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
+
+const roleLabels: Record<string, string> = {
+  admin: "Administrator",
+  manager: "Manager",
+  user: "Member",
+};
+
+function UserMenu() {
+  const { user } = useUser();
+  const { signOut } = useClerk();
+  const { data: me } = useGetCurrentUser({ query: { queryKey: getGetCurrentUserQueryKey() } });
+
+  const displayName =
+    me?.name || user?.fullName || me?.email || user?.primaryEmailAddress?.emailAddress || "Account";
+  const initials = displayName
+    .split(" ")
+    .map((p) => p[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+
+  return (
+    <div className="border-t border-sidebar-border p-4">
+      <div className="flex items-center gap-3">
+        <div className="w-9 h-9 rounded-full bg-indigo-600/80 flex items-center justify-center text-sm font-semibold flex-shrink-0">
+          {initials || "?"}
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="text-sm font-medium truncate">{displayName}</div>
+          <div className="text-[11px] text-sidebar-foreground/60 truncate">
+            {me ? roleLabels[me.role] ?? me.role : "…"}
+          </div>
+        </div>
+        <button
+          type="button"
+          title="Sign out"
+          onClick={() => signOut({ redirectUrl: basePath || "/" })}
+          className="p-2 rounded-md text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-foreground transition-colors"
+        >
+          <LogOut className="w-4 h-4" />
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
@@ -61,6 +112,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             );
           })}
         </nav>
+
+        <UserMenu />
       </aside>
 
       {/* Main Content */}

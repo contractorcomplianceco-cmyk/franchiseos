@@ -1,0 +1,1 @@
+- [Auth retrofit lessons](auth-retrofit-lessons.md) — retrofitting auth: audit every table for owner scoping (IDOR risk) and serialize first-admin bootstrap with an advisory lock.

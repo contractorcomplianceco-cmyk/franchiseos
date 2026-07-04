@@ -5,4 +5,5 @@ export * from "./tasks";
 export * from "./audits";
 export * from "./documents";
 export * from "./conversations";
+export * from "./users";
 export * from "./messages";

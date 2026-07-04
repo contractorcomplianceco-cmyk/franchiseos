@@ -1,6 +1,7 @@
+@layer theme, base, clerk, components, utilities;
 @import "tailwindcss";
 @import "tw-animate-css";
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 @plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
@@ -74,44 +75,44 @@
   --elevate-1: rgba(0,0,0, .03);
   --elevate-2: rgba(0,0,0, .08);
 
-  --background: 0 0% 98%;
+  --background: 224 71% 99%;
   --foreground: 222 47% 11%;
   
   --card: 0 0% 100%;
   --card-foreground: 222 47% 11%;
-  --card-border: 214 32% 91%;
+  --card-border: 220 14% 92%;
 
   --popover: 0 0% 100%;
   --popover-foreground: 222 47% 11%;
-  --popover-border: 214 32% 91%;
+  --popover-border: 220 14% 92%;
 
   --primary: 243 75% 59%;
   --primary-foreground: 210 40% 98%;
 
-  --secondary: 210 40% 96.1%;
+  --secondary: 220 14% 92%;
   --secondary-foreground: 222 47% 11.2%;
 
-  --muted: 210 40% 96.1%;
-  --muted-foreground: 215.4 16.3% 46.9%;
+  --muted: 220 14% 94%;
+  --muted-foreground: 220 9% 46%;
 
-  --accent: 210 40% 96.1%;
+  --accent: 220 14% 92%;
   --accent-foreground: 222 47% 11.2%;
 
   --destructive: 348 83% 47%;
   --destructive-foreground: 210 40% 98%;
 
-  --border: 214 32% 91%;
-  --input: 214 32% 91%;
+  --border: 220 14% 90%;
+  --input: 220 14% 90%;
   --ring: 243 75% 59%;
 
-  --sidebar: 222 47% 11%;
+  --sidebar: 226 50% 9%;
   --sidebar-foreground: 210 40% 98%;
-  --sidebar-border: 215 28% 17%;
-  --sidebar-primary: 243 75% 59%;
+  --sidebar-border: 226 30% 16%;
+  --sidebar-primary: 243 75% 65%;
   --sidebar-primary-foreground: 210 40% 98%;
-  --sidebar-accent: 215 28% 17%;
+  --sidebar-accent: 226 40% 15%;
   --sidebar-accent-foreground: 210 40% 98%;
-  --sidebar-ring: 243 75% 59%;
+  --sidebar-ring: 243 75% 65%;
 
   --chart-1: 243 75% 59%;
   --chart-2: 142 71% 45%;
@@ -119,7 +120,7 @@
   --chart-4: 348 83% 47%;
   --chart-5: 280 65% 60%;
 
-  --app-font-sans: 'Inter', sans-serif;
+  --app-font-sans: 'Outfit', sans-serif;
   --app-font-serif: Georgia, serif;
   --app-font-mono: 'JetBrains Mono', monospace;
   --radius: 0.5rem;
@@ -138,33 +139,33 @@
 }
 
 .dark {
-  --background: 222 47% 11%;
+  --background: 226 50% 7%;
   --foreground: 210 40% 98%;
-  --card: 215 28% 14%;
+  --card: 226 45% 10%;
   --card-foreground: 210 40% 98%;
-  --card-border: 215 28% 22%;
-  --popover: 215 28% 14%;
+  --card-border: 226 30% 16%;
+  --popover: 226 45% 10%;
   --popover-foreground: 210 40% 98%;
-  --popover-border: 215 28% 22%;
+  --popover-border: 226 30% 16%;
   --primary: 243 75% 65%;
   --primary-foreground: 210 40% 98%;
-  --secondary: 215 28% 17%;
+  --secondary: 226 30% 16%;
   --secondary-foreground: 210 40% 98%;
-  --muted: 215 28% 17%;
+  --muted: 226 30% 16%;
   --muted-foreground: 215 20% 65%;
-  --accent: 215 28% 17%;
+  --accent: 226 30% 16%;
   --accent-foreground: 210 40% 98%;
   --destructive: 348 83% 47%;
   --destructive-foreground: 210 40% 98%;
-  --border: 215 28% 22%;
-  --input: 215 28% 22%;
+  --border: 226 30% 16%;
+  --input: 226 30% 16%;
   --ring: 243 75% 65%;
-  --sidebar: 222 47% 9%;
+  --sidebar: 226 50% 6%;
   --sidebar-foreground: 210 40% 98%;
-  --sidebar-border: 215 28% 17%;
+  --sidebar-border: 226 30% 14%;
   --sidebar-primary: 243 75% 65%;
   --sidebar-primary-foreground: 210 40% 98%;
-  --sidebar-accent: 215 28% 17%;
+  --sidebar-accent: 226 30% 16%;
   --sidebar-accent-foreground: 210 40% 98%;
   --sidebar-ring: 243 75% 65%;
 }

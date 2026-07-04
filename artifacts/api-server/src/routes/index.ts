@@ -1,5 +1,7 @@
-import { Router, type IRouter } from "express";
+import { Router, type IRouter, type Request, type Response, type NextFunction } from "express";
 import healthRouter from "./health";
+import meRouter from "./me";
+import { requireAuth, requireWriter, requireAdmin } from "../middlewares/auth";
 import locationsRouter from "./locations";
 import licensesRouter from "./licenses";
 import complianceRouter from "./compliance";
@@ -12,7 +14,31 @@ import aiRouter from "./ai";
 
 const router: IRouter = Router();
 
+// Role policy for portfolio data: reads for any signed-in user,
+// creates/updates for managers and admins, deletes for admins only.
+function roleGate(req: Request, res: Response, next: NextFunction) {
+  if (req.method === "DELETE") {
+    requireAdmin(req, res, next);
+    return;
+  }
+  if (["POST", "PUT", "PATCH"].includes(req.method)) {
+    requireWriter(req, res, next);
+    return;
+  }
+  next();
+}
+
 router.use(healthRouter);
+router.use(meRouter);
+
+// Everything below requires a signed-in user.
+router.use(requireAuth);
+
+// AI assistant is available to every signed-in user (including managing
+// their own conversations), so it is mounted before the role gate.
+router.use(aiRouter);
+
+router.use(roleGate);
 router.use(locationsRouter);
 router.use(licensesRouter);
 router.use(complianceRouter);
@@ -21,6 +47,5 @@ router.use(auditsRouter);
 router.use(documentsRouter);
 router.use(dashboardRouter);
 router.use(expansionRouter);
-router.use(aiRouter);
 
 export default router;

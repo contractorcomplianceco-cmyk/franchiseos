@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { asc, desc, eq } from "drizzle-orm";
+import { and, asc, desc, eq } from "drizzle-orm";
 import {
   db,
   conversations,
@@ -25,10 +25,11 @@ import { toIso } from "../lib/serialize";
 
 const router: IRouter = Router();
 
-router.get("/ai/conversations", async (_req, res): Promise<void> => {
+router.get("/ai/conversations", async (req, res): Promise<void> => {
   const rows = await db
     .select()
     .from(conversations)
+    .where(eq(conversations.userId, req.currentUser!.id))
     .orderBy(desc(conversations.createdAt));
   res.json(ListConversationsResponse.parse(rows.map((r) => toIso(r, ["createdAt"]))));
 });
@@ -37,6 +38,19 @@ router.get("/ai/conversations/:id/messages", async (req, res): Promise<void> => 
   const params = ListConversationMessagesParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });
+    return;
+  }
+  const [conv] = await db
+    .select()
+    .from(conversations)
+    .where(
+      and(
+        eq(conversations.id, params.data.id),
+        eq(conversations.userId, req.currentUser!.id),
+      ),
+    );
+  if (!conv) {
+    res.status(404).json({ error: "Conversation not found" });
     return;
   }
   const rows = await db
@@ -55,7 +69,12 @@ router.delete("/ai/conversations/:id", async (req, res): Promise<void> => {
   }
   const [row] = await db
     .delete(conversations)
-    .where(eq(conversations.id, params.data.id))
+    .where(
+      and(
+        eq(conversations.id, params.data.id),
+        eq(conversations.userId, req.currentUser!.id),
+      ),
+    )
     .returning();
   if (!row) {
     res.status(404).json({ error: "Conversation not found" });
@@ -148,14 +167,19 @@ router.post("/ai/chat", async (req, res): Promise<void> => {
     const [existing] = await db
       .select()
       .from(conversations)
-      .where(eq(conversations.id, convId));
+      .where(
+        and(eq(conversations.id, convId), eq(conversations.userId, req.currentUser!.id)),
+      );
     if (!existing) {
       res.status(404).json({ error: "Conversation not found" });
       return;
     }
   } else {
     const title = message.length > 60 ? message.slice(0, 57) + "..." : message;
-    const [created] = await db.insert(conversations).values({ title }).returning();
+    const [created] = await db
+      .insert(conversations)
+      .values({ title, userId: req.currentUser!.id })
+      .returning();
     convId = created.id;
   }
 

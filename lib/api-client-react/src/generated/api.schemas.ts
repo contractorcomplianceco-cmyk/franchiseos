@@ -13,6 +13,22 @@ export interface ErrorMessage {
   error: string;
 }
 
+export type CurrentUserRole = typeof CurrentUserRole[keyof typeof CurrentUserRole];
+
+
+export const CurrentUserRole = {
+  admin: 'admin',
+  manager: 'manager',
+  user: 'user',
+} as const;
+
+export interface CurrentUser {
+  id: number;
+  email: string;
+  name: string;
+  role: CurrentUserRole;
+}
+
 export type LocationStatus = typeof LocationStatus[keyof typeof LocationStatus];
 
 
