@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "FranchiseIntelligenceOS"
+version = "1.0.0"
+id = "artifacts/franchise-os"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 20668
+
+[services.development]
+run = "pnpm --filter @workspace/franchise-os run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/franchise-os", "run", "build" ]
+publicDir = "artifacts/franchise-os/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "20668"
+BASE_PATH = "/"

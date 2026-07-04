@@ -1,0 +1,165 @@
+# ------------------------------
+# FranchiseIntelligenceOS Replit Build Prompt
+# ------------------------------
+
+# PROJECT PURPOSE:
+# AI-powered franchise operations intelligence SaaS.
+# Modules: Locations, Compliance, Tasks, Expansion Intelligence, Documents, AI Assistant.
+
+# TECH STACK:
+# - Frontend: Next.js + TypeScript + TailwindCSS + shadcn-ui
+# - Backend: Node.js + Express (or Next.js API routes)
+# - Database: PostgreSQL (Prisma ORM)
+# - Auth: Email/password auth (can use Replit Auth for staging)
+# - AI: OpenAI API
+# - Styling: TailwindCSS
+# - Monorepo: pnpm workspaces
+
+# ------------------------------
+# 1. REPLIT SETUP
+# ------------------------------
+# Use Node.js + Postgres template
+# Install PNPM
+pnpm install -g pnpm
+
+# ------------------------------
+# 2. DIRECTORY STRUCTURE
+# ------------------------------
+# /artifacts/client-intake        -> Next.js frontend
+# /artifacts/api-server           -> Node/Express backend
+# /lib/db                         -> Prisma ORM + schema
+# /lib/upload-rules               -> Shared upload constraints
+# /lib/api-spec                   -> OpenAPI spec + codegen
+# /lib/api-client-react            -> React hooks for API
+# /lib/api-zod                    -> Zod schema validation
+# /docs                           -> Deployment docs
+# /attached_assets                -> logos, sample PDFs, images
+
+# ------------------------------
+# 3. ENVIRONMENT VARIABLES (.env)
+# ------------------------------
+# Example `.env.example`
+DATABASE_URL=postgres://postgres:password@localhost:5432/franchiseintelligence
+PORT=3001
+OPENAI_API_KEY=your_openai_api_key_here
+SESSION_SECRET=your_session_secret_here
+WORKSPACE_ID=default
+
+# ------------------------------
+# 4. FRONTEND (Next.js + Tailwind)
+# ------------------------------
+cd artifacts/client-intake
+
+# Install dependencies
+pnpm install
+
+# Development
+pnpm dev
+
+# Build
+pnpm build
+
+# Preview
+pnpm preview
+
+# ------------------------------
+# 5. BACKEND / API
+# ------------------------------
+cd ../../artifacts/api-server
+
+# Install dependencies
+pnpm install
+
+# Run health check
+pnpm start:dev
+# Should expose /api/health
+
+# Core API routes:
+# - /api/locations
+# - /api/licenses
+# - /api/compliance
+# - /api/tasks
+# - /api/audits
+# - /api/documents
+# - /api/ai/chat (AI proxy)
+
+# ------------------------------
+# 6. DATABASE
+# ------------------------------
+cd ../../lib/db
+
+# Install dependencies
+pnpm install
+
+# Prisma ORM commands
+pnpm prisma generate       # Generate client
+pnpm prisma migrate dev    # Apply migrations locally
+
+# Core tables:
+# - User (roles, sessions)
+# - FranchiseLocation
+# - License
+# - ComplianceCheck
+# - Task
+# - Audit
+# - Document
+# - AIConversation
+# - AIMessage
+
+# ------------------------------
+# 7. AI ASSISTANT
+# ------------------------------
+# Endpoint: POST /api/ai/chat
+# Flow:
+#   1. Receive user question
+#   2. Pull relevant DB context (locations, compliance, SOPs, audits)
+#   3. Send to OpenAI API
+#   4. Return structured response with bullet points and next-step suggestions
+#   5. Persist conversation history in AIConversation & AIMessage
+
+# ------------------------------
+# 8. AUTHENTICATION
+# ------------------------------
+# - Email/password auth
+# - Optional Replit Auth for staging
+# - Multi-user / RBAC required
+# - Session storage: PostgreSQL (or Replit DB for demo)
+
+# ------------------------------
+# 9. DOCUMENT UPLOAD
+# ------------------------------
+# - Validate type/size per lib/upload-rules
+# - Link to location or task
+# - Make searchable by AI
+# - Optional: Supabase storage or local storage for Replit
+
+# ------------------------------
+# 10. BUILD COMMANDS (root workspace)
+# ------------------------------
+pnpm install
+pnpm --filter artifacts/client-intake build
+pnpm --filter artifacts/api-server build
+pnpm --filter lib/db prisma generate
+
+# ------------------------------
+# 11. DEPLOY / PREVIEW
+# ------------------------------
+# 1. Start Postgres server in Replit
+# 2. Run backend API (PORT=3001)
+# 3. Build & serve frontend (Vite / Next.js preview)
+# 4. AI endpoint should proxy OpenAI requests securely
+# 5. Test dashboard: Locations, Compliance, Tasks, Expansion Intelligence, Documents, AI Chat
+
+# ------------------------------
+# 12. NOTES
+# ------------------------------
+# - Ensure .env is gitignored
+# - Remove Replit-only assumptions if migrating to AWS/Docker
+# - Tasks auto-created from compliance rules
+# - Compliance scoring: 0–100 → green/yellow/red
+# - Expansion intelligence: readiness per state
+# - AI must cite sources from DB/SOPs
+# - All modules must persist in Postgres, no localStorage as source of truth
+# - Include Dockerfile and/or Replit .replit config for build/run commands
+
+# End of Build Prompt
