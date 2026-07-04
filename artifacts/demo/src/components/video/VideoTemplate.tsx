@@ -62,6 +62,33 @@ export default function VideoTemplate({
   const SceneComponent = SCENE_COMPONENTS[baseSceneKey];
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const rootRef = useRef<HTMLDivElement | null>(null);
+
+  // Freeze/resume all visual motion (framer-motion accelerated + CSS animations)
+  // inside the video when paused. Re-applied on an interval so animations
+  // created after the pause (e.g. per-scene entrances) are caught too.
+  useEffect(() => {
+    const root: any = rootRef.current;
+    if (!root || typeof (document as any).getAnimations !== 'function') return;
+
+    const inRoot = (anim: any) => {
+      const target = anim?.effect?.target;
+      return target && typeof root.contains === 'function' && root.contains(target);
+    };
+    const list = (): any[] => (document as any).getAnimations();
+
+    if (!paused) {
+      list().forEach((a: any) => {
+        if (inRoot(a) && a.playState === 'paused') a.play();
+      });
+      return;
+    }
+
+    const freeze = () => list().forEach((a: any) => { if (inRoot(a)) a.pause(); });
+    freeze();
+    const id = (window as any).setInterval(freeze, 120);
+    return () => (window as any).clearInterval(id);
+  }, [paused]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -85,7 +112,7 @@ export default function VideoTemplate({
   }, [paused]);
 
   return (
-    <div className="w-full h-screen overflow-hidden relative bg-[#020617]">
+    <div ref={rootRef} className="w-full h-screen overflow-hidden relative bg-[#020617]">
       {/* Persistent Background Layer */}
       <div className="absolute inset-0 z-0">
         {/* Animated Grid */}

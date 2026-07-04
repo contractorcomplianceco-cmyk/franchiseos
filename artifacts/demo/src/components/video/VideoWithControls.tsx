@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ChevronDown, ChevronUp, Pause, Play, Repeat, Volume2, VolumeX } from 'lucide-react';
+import { ChevronDown, Pause, Play, Repeat, Volume2, VolumeX } from 'lucide-react';
 import VideoTemplate, { SCENE_DURATIONS } from './VideoTemplate';
 import { useSceneControls } from './useSceneControls';
 
 const PROGRESS_TICK_MS = 60;
+const AUTO_HIDE_MS = 2000;
 
 interface ControlBarProps {
   visible: boolean;
-  collapsed: boolean;
   locked: boolean;
   muted: boolean;
   paused: boolean;
@@ -19,41 +19,53 @@ interface ControlBarProps {
   onToggleLock: () => void;
   onToggleMute: () => void;
   onJumpTo: (index: number) => void;
-  onToggleCollapsed: () => void;
+  onHide: () => void;
 }
 
 function ProgressSegments({
-  sceneKeys, activeIndex, activeDuration, tick, onJumpTo,
+  sceneKeys, activeIndex, activeDuration, tick, paused, onJumpTo,
 }: {
   sceneKeys: string[];
   activeIndex: number;
   activeDuration: number;
   tick: number;
+  paused: boolean;
   onJumpTo: (index: number) => void;
 }) {
   const [elapsed, setElapsed] = useState(0);
+  const elapsedRef = useRef(0);
 
+  // Reset the elapsed clock whenever the scene changes / is jumped to.
   useEffect(() => {
+    elapsedRef.current = 0;
     setElapsed(0);
-    const start = performance.now();
+  }, [tick]);
+
+  // Advance only while playing; freeze (and resume from) accumulated elapsed.
+  useEffect(() => {
+    if (paused) return;
+    let last = performance.now();
     const id = window.setInterval(() => {
-      setElapsed(performance.now() - start);
+      const now = performance.now();
+      elapsedRef.current += now - last;
+      last = now;
+      setElapsed(elapsedRef.current);
     }, PROGRESS_TICK_MS);
     return () => window.clearInterval(id);
-  }, [tick]);
+  }, [tick, paused]);
 
   const progress = activeDuration > 0 ? Math.min(1, elapsed / activeDuration) : 0;
 
   return (
-    <div className="flex-1 flex items-center gap-1.5">
+    <div className="flex-1 flex items-center gap-1 sm:gap-1.5">
       {sceneKeys.map((key, i) => {
         const isActive = i === activeIndex;
-        const fill = isActive ? progress * 100 : 0;
+        const fill = isActive ? progress * 100 : i < activeIndex ? 100 : 0;
         return (
           <button
             key={key}
             onClick={() => onJumpTo(i)}
-            className="flex-1 h-3 bg-white/20 rounded-full overflow-hidden cursor-pointer hover:h-4 hover:bg-white/25 transition-all relative min-h-[12px]"
+            className="flex-1 h-2 sm:h-3 bg-white/20 rounded-full overflow-hidden cursor-pointer hover:bg-white/25 transition-all relative min-h-[8px] sm:min-h-[12px]"
             aria-label={`Jump to scene ${i + 1}`}
             aria-current={isActive ? 'true' : undefined}
           >
@@ -69,12 +81,15 @@ function ProgressSegments({
 }
 
 function ControlBar({
-  visible, collapsed, locked, muted, paused, sceneKeys, activeIndex, activeDuration, tick,
-  onTogglePlay, onToggleLock, onToggleMute, onJumpTo, onToggleCollapsed,
+  visible, locked, muted, paused, sceneKeys, activeIndex, activeDuration, tick,
+  onTogglePlay, onToggleLock, onToggleMute, onJumpTo, onHide,
 }: ControlBarProps) {
+  const btn =
+    'flex items-center justify-center transition-colors rounded-lg shrink-0 w-10 h-10 sm:w-14 sm:h-14';
+  const icon = 'w-5 h-5 sm:w-8 sm:h-8';
   return (
     <div
-      className={`flex items-center gap-3 bg-black/50 backdrop-blur-sm px-5 py-4 transition-all duration-200 ease-out ${
+      className={`flex items-center gap-2 sm:gap-3 bg-black/50 backdrop-blur-sm px-3 py-3 sm:px-5 sm:py-4 transition-all duration-200 ease-out ${
         visible
           ? 'translate-y-0 opacity-100 pointer-events-auto'
           : 'translate-y-full opacity-0 pointer-events-none'
@@ -83,17 +98,17 @@ function ControlBar({
     >
       <button
         onClick={onTogglePlay}
-        className="w-14 h-14 flex items-center justify-center transition-colors rounded-lg shrink-0 text-white bg-white/15 hover:bg-white/25"
+        className={`${btn} text-white bg-white/15 hover:bg-white/25`}
         title={paused ? 'Play' : 'Pause'}
         aria-label={paused ? 'Play' : 'Pause'}
         aria-pressed={!paused}
       >
-        {paused ? <Play className="w-8 h-8" /> : <Pause className="w-8 h-8" />}
+        {paused ? <Play className={icon} /> : <Pause className={icon} />}
       </button>
 
       <button
         onClick={onToggleLock}
-        className={`w-14 h-14 flex items-center justify-center transition-colors rounded-lg shrink-0 ${
+        className={`${btn} hidden sm:flex ${
           locked
             ? 'text-white bg-white/15 hover:bg-white/25'
             : 'text-white/60 hover:text-white hover:bg-white/10'
@@ -102,12 +117,12 @@ function ControlBar({
         aria-label={locked ? 'Loop current scene: on' : 'Loop current scene: off'}
         aria-pressed={locked}
       >
-        <Repeat className="w-8 h-8" />
+        <Repeat className={icon} />
       </button>
 
       <button
         onClick={onToggleMute}
-        className={`w-14 h-14 flex items-center justify-center transition-colors rounded-lg shrink-0 ${
+        className={`${btn} ${
           muted
             ? 'text-white/60 hover:text-white hover:bg-white/10'
             : 'text-white bg-white/15 hover:bg-white/25'
@@ -116,7 +131,7 @@ function ControlBar({
         aria-label={muted ? 'Unmute' : 'Mute'}
         aria-pressed={!muted}
       >
-        {muted ? <VolumeX className="w-8 h-8" /> : <Volume2 className="w-8 h-8" />}
+        {muted ? <VolumeX className={icon} /> : <Volume2 className={icon} />}
       </button>
 
       <div className="w-px self-stretch bg-white/15" aria-hidden="true" />
@@ -126,21 +141,21 @@ function ControlBar({
         activeIndex={activeIndex}
         activeDuration={activeDuration}
         tick={tick}
+        paused={paused}
         onJumpTo={onJumpTo}
       />
 
-      <div className="text-xl text-white/60 font-mono tabular-nums shrink-0">
+      <div className="text-sm sm:text-xl text-white/60 font-mono tabular-nums shrink-0">
         {activeIndex + 1}/{sceneKeys.length}
       </div>
 
       <button
-        onClick={onToggleCollapsed}
-        className="w-14 h-14 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 transition-colors rounded-lg shrink-0"
-        title={collapsed ? 'Show controls' : 'Hide controls'}
-        aria-label={collapsed ? 'Show controls' : 'Hide controls'}
-        aria-expanded={!collapsed}
+        onClick={onHide}
+        className={`${btn} text-white/60 hover:text-white hover:bg-white/10`}
+        title="Hide controls"
+        aria-label="Hide controls"
       >
-        {collapsed ? <ChevronUp className="w-10 h-10" /> : <ChevronDown className="w-10 h-10" />}
+        <ChevronDown className="w-6 h-6 sm:w-10 sm:h-10" />
       </button>
     </div>
   );
@@ -156,46 +171,44 @@ export default function VideoWithControls() {
 
   const [muted, setMuted] = useState(true);
   const [paused, setPaused] = useState(false);
-  const sensorRef = useRef<HTMLDivElement | null>(null);
-  const [collapsed, setCollapsed] = useState(false);
-  const [hovering, setHovering] = useState(false);
-  const [tapPinned, setTapPinned] = useState(false);
+  const [visible, setVisible] = useState(true);
+  const hideTimer = useRef<number | null>(null);
 
-  const handlePointerEnter = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
-    if (e.pointerType === 'mouse') setHovering(true);
-  }, []);
-  const handlePointerLeave = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
-    if (e.pointerType === 'mouse') setHovering(false);
-  }, []);
-  const handlePointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
-    if (e.pointerType === 'mouse') return;
-    if (collapsed) setTapPinned(true);
-  }, [collapsed]);
-  const handleToggleCollapsed = useCallback(() => {
-    setCollapsed(c => {
-      if (!c) { setHovering(false); setTapPinned(false); }
-      return !c;
-    });
+  const clearHide = useCallback(() => {
+    if (hideTimer.current !== null) {
+      window.clearTimeout(hideTimer.current);
+      hideTimer.current = null;
+    }
   }, []);
 
+  // Reveal the bar and (unless paused) start the 2s auto-hide countdown.
+  const showControls = useCallback(() => {
+    setVisible(true);
+    clearHide();
+    if (!paused) {
+      hideTimer.current = window.setTimeout(() => setVisible(false), AUTO_HIDE_MS);
+    }
+  }, [paused, clearHide]);
+
+  // Keep the bar up while paused; resume the countdown when playing.
   useEffect(() => {
-    if (!(collapsed && tapPinned)) return;
-    const onDocPointerDown = (e: PointerEvent) => {
-      if (e.pointerType === 'mouse') return;
-      const sensor = sensorRef.current;
-      if (sensor && !sensor.contains(e.target as Node)) setTapPinned(false);
-    };
-    document.addEventListener('pointerdown', onDocPointerDown);
-    return () => document.removeEventListener('pointerdown', onDocPointerDown);
-  }, [collapsed, tapPinned]);
-
-  const barVisible = !collapsed || hovering || tapPinned;
+    setVisible(true);
+    clearHide();
+    if (!paused) {
+      hideTimer.current = window.setTimeout(() => setVisible(false), AUTO_HIDE_MS);
+    }
+    return clearHide;
+  }, [paused, clearHide]);
 
   // Export path: no props, preserves recording markers and unmuted audio.
   if (!isIframed) return <VideoTemplate />;
 
   return (
-    <div className="relative w-full h-screen">
+    <div
+      className="relative w-full h-screen"
+      onPointerMove={showControls}
+      onPointerDown={showControls}
+    >
       <VideoTemplate
         key={mountKey}
         durations={durations}
@@ -204,18 +217,9 @@ export default function VideoWithControls() {
         paused={paused}
         onSceneChange={onSceneChange}
       />
-      <div
-        ref={sensorRef}
-        className="absolute bottom-0 left-0 right-0 z-50 flex flex-col justify-end"
-        style={{ height: '25%' }}
-        onPointerEnter={handlePointerEnter}
-        onPointerLeave={handlePointerLeave}
-        onPointerDown={handlePointerDown}
-      >
-        <div className="flex-1 w-full" aria-hidden="true" />
+      <div className="absolute bottom-0 left-0 right-0 z-50">
         <ControlBar
-          visible={barVisible}
-          collapsed={collapsed}
+          visible={visible}
           locked={locked}
           muted={muted}
           paused={paused}
@@ -227,7 +231,7 @@ export default function VideoWithControls() {
           onToggleLock={toggleLock}
           onToggleMute={() => setMuted(m => !m)}
           onJumpTo={jumpTo}
-          onToggleCollapsed={handleToggleCollapsed}
+          onHide={() => { clearHide(); setVisible(false); }}
         />
       </div>
     </div>

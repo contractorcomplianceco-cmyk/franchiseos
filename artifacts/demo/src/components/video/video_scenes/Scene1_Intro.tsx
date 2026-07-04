@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import logoFull from '@assets/fios_logo_full.png';
-import logoIcon from '@assets/fios_logo_icon.png';
+import logoIcon from '@assets/fios_logo_icon_v2.png';
 
 export function Scene1_Intro() {
   const [phase, setPhase] = useState(0);

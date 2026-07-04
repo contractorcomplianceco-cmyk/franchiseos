@@ -1,2 +1,4 @@
 - [Narrated video-js audio](video-js-narrated-audio.md) — pre-mix bg music + per-scene VO into one composite_audio.mp3 at cumulative scene offsets; duck music low; keep each VO shorter than its scene.
 - [video-js scene pause/resume](video-js-scene-pause-resume.md) — pausing the useVideoPlayer timer must track remaining time (refs), not restart the scene, or visuals desync from resumed audio.
+- [video-js visual pause via WAAPI](video-js-visual-pause-waapi.md) — freezing the timer/audio isn't enough; pause framer-motion+CSS anims via document.getAnimations() scoped to root, re-applied on interval.
+- [video-js demo iframed vs export](video-js-demo-iframed-vs-export.md) — /demo/ direct = bare template (no controls, scene 0); controls only when iframed in landing. Verify a scene via temp activeIndex + landing screenshot.
