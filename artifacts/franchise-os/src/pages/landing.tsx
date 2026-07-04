@@ -2,6 +2,7 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { ShieldCheck, TrendingUp, Bot, MapPin, CheckSquare, FileText } from "lucide-react";
 import logoIcon from "@/assets/logo-icon.png";
+import logoFull from "@/assets/logo-full.png";
 
 const features = [
   {
@@ -60,10 +61,11 @@ export default function Landing() {
 
       <main className="max-w-6xl mx-auto px-6">
         <section className="text-center pt-20 pb-16">
-          <img src={logoIcon} alt="" className="h-24 w-auto mx-auto mb-8" />
-          <p className="text-[11px] tracking-[0.35em] text-slate-400 uppercase mb-4">
-            Intelligence. Compliance. Growth.
-          </p>
+          <img
+            src={logoFull}
+            alt="FranchiseIntelligenceOS — Intelligence. Compliance. Growth."
+            className="h-56 w-auto mx-auto mb-10 drop-shadow-[0_0_45px_rgba(99,102,241,0.25)]"
+          />
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-tight max-w-3xl mx-auto">
             The operating system for elite franchise portfolios
           </h1>
