@@ -10,6 +10,7 @@ AI-powered franchise operations platform: track locations, licenses, compliance 
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
+- `artifacts/demo` (slug `demo`, `/demo/`) — video-js marketing demo; restart via `artifacts/demo: web`. Never suggestDeploy a video-js artifact; present only.
 - Required env: `DATABASE_URL` — Postgres connection string; `AI_INTEGRATIONS_OPENAI_BASE_URL` + `AI_INTEGRATIONS_OPENAI_API_KEY` — Replit OpenAI AI integration (auto-provisioned)
 
 ## Stack
@@ -64,6 +65,8 @@ AI-powered franchise operations platform: track locations, licenses, compliance 
 - Expansion: readiness score and recommendation per US state
 - Documents: searchable SOP/policy/note library with real file uploads (Uppy → presigned PUT → object storage; served at `/api/storage{objectPath}`)
 - AI Assistant: multi-conversation chat grounded in live DB data with citations
+- Marketing landing (`franchise-os/src/pages/landing.tsx`, signed-out only): premium hero, CSS dashboard/AI-chat mockups, modules grid, testimonials, CTA, and an embedded `/demo/` iframe (starts muted). Uses framer-motion + shadcn Button, no new deps
+- Demo video (`artifacts/demo`, video-js): ~81s narrated walkthrough (6 scenes: intro, dashboard, assistant, compliance, tasks, close) with pre-mixed composite audio (bg music + male VO) and scene/mute controls
 - Realtime notifications: socket.io bell in top bar; server pushes license-expiring & task-overdue alerts on mutation and on a 60s interval
 
 ## User preferences

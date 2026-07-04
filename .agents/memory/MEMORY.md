@@ -1,3 +1,1 @@
-- [Auth retrofit lessons](auth-retrofit-lessons.md) — retrofitting auth: audit every table for owner scoping (IDOR risk) and serialize first-admin bootstrap with an advisory lock.
-- [Vite Tailwind @import order](vite-tailwind-css-import-order.md) — font/url @import must sit ABOVE @import "tailwindcss" or PostCSS errors at a bogus high line number.
-- [Source-lib react devDep](object-storage-web-lib-react-peerdep.md) — non-composite libs imported as source need react/react-dom in their own devDependencies, not just peerDeps.
+- [Narrated video-js audio](video-js-narrated-audio.md) — pre-mix bg music + per-scene VO into one composite_audio.mp3 at cumulative scene offsets; duck music low; keep each VO shorter than its scene.

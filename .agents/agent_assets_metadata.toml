@@ -1,0 +1,44 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "um0hbIzacXWvlBtKgXa_W"
+uri = "file://artifacts/demo/public/audio/vo_intro.mp3"
+type = "audio"
+title = "vo intro"
+
+[[outputs]]
+id = "2glLdvC7s6pjKYdvT6kh9"
+uri = "file://artifacts/demo/public/audio/vo_dashboard.mp3"
+type = "audio"
+title = "vo dashboard"
+
+[[outputs]]
+id = "5tV9ni3we_wE9d4oRLqIQ"
+uri = "file://artifacts/demo/public/audio/vo_assistant.mp3"
+type = "audio"
+title = "vo assistant"
+
+[[outputs]]
+id = "6j8kNpG1IE-wfUDAvlPkC"
+uri = "file://artifacts/demo/public/audio/vo_compliance.mp3"
+type = "audio"
+title = "vo compliance"
+
+[[outputs]]
+id = "eKqTVWtAmkEbdPzZ-bpQk"
+uri = "file://artifacts/demo/public/audio/vo_tasks.mp3"
+type = "audio"
+title = "vo tasks"
+
+[[outputs]]
+id = "whYiwYBUYpHLDz4JOHLiN"
+uri = "file://artifacts/demo/public/audio/vo_close.mp3"
+type = "audio"
+title = "vo close"
+
+[[outputs]]
+id = "9y5lkDIfJBJx71KbJ-Pl9"
+uri = "file://artifacts/demo/public/audio/bg_music.mp3"
+type = "audio"
+title = "background music"
