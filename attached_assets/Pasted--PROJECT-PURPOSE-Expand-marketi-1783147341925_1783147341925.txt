@@ -1,0 +1,85 @@
+# ------------------------------
+# PROJECT PURPOSE
+# ------------------------------
+# Expand marketing page and create demo walkthrough video for FranchiseIntelligenceOS
+# Goal: Highlight premium dashboard, AI Assistant, expanded features, and brand identity
+
+# ------------------------------
+# TECH STACK
+# ------------------------------
+# Frontend: Next.js + TypeScript + TailwindCSS + shadcn-ui
+# Backend: Node.js API routes / Express
+# Video & Animation: Can use React-based animation library (Framer Motion), Lottie animations, or external video generator
+# Narration: Young American male voice, upbeat
+# Styling: Premium logo, gradients, 3D/glassmorphism dashboard panels
+
+# ------------------------------
+# DIRECTORY STRUCTURE
+# ------------------------------
+# /artifacts/client-marketing  -> Next.js marketing site
+# /assets/logo                 -> Premium logo file (use latest uploaded)
+# /assets/video                -> Video assets, demo walkthrough clips
+# /lib/animations              -> Lottie or Framer Motion JSON animations
+# /public/videos               -> Compiled demo video
+# /docs                        -> Marketing copy, narration scripts
+
+# ------------------------------
+# ENVIRONMENT VARIABLES
+# ------------------------------
+NEXT_PUBLIC_BRAND_LOGO=/public/assets/logo/logo.png
+DEMO_VIDEO_PATH=/public/videos/demo_walkthrough.mp4
+VOICE_API_KEY=your_text_to_speech_api_key_here
+
+# ------------------------------
+# FRONTEND / MARKETING PAGE SETUP
+# ------------------------------
+cd artifacts/client-marketing
+pnpm install
+
+# Features:
+# - High-res logo in header
+# - Hero section: Tagline, CTA buttons
+# - Dashboard preview section: Animated high-res screenshot
+# - AI Assistant preview with callout
+# - Features & modules cards
+# - Demo video section with play button
+# - Testimonials / use cases (optional)
+# - Animated hover effects, gradient highlights
+
+pnpm dev     # Start dev server
+pnpm build   # Production build
+pnpm preview # Preview
+
+# ------------------------------
+# DEMO VIDEO CREATION
+# ------------------------------
+# 1. Prepare animation sequences using Framer Motion / Lottie
+# 2. Use React components to record screen flows of dashboard, AI assistant, tasks, documents, expansion module
+# 3. Use Text-to-Speech API with VOICE_API_KEY
+#    - American male, upbeat, narration for each section
+# 4. Compile sequence using ffmpeg or external tool
+#    - Combine dashboard recordings, animations, and narration
+#    - Output: /public/videos/demo_walkthrough.mp4
+# 5. Embed video on marketing page:
+#    <video src={DEMO_VIDEO_PATH} controls autoPlay muted loop />
+
+# ------------------------------
+# BUILD & RUN
+# ------------------------------
+pnpm install
+pnpm --filter artifacts/client-marketing build
+
+# Start dev server to preview animations, video, and full marketing page
+pnpm dev
+
+# ------------------------------
+# NOTES
+# ------------------------------
+# - Ensure premium logo is used in all marketing page sections
+# - Animations should highlight key modules (AI Assistant, Compliance, Tasks, Expansion)
+# - Narration script must match animation flow
+# - Video should be high-resolution, 1080p minimum
+# - Marketing page should be responsive and CTA-focused
+# - Optionally use background music (royalty-free) for demo walkthrough
+# - Prepare .env.example with VOICE_API_KEY and paths
+# - Make build portable for AWS / Replit deployment
