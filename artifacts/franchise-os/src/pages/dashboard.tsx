@@ -1,9 +1,11 @@
 import { useGetDashboardSummary, getGetDashboardSummaryQueryKey, useGetRecentActivity, getGetRecentActivityQueryKey } from "@workspace/api-client-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ShieldCheck, MapPin, CheckSquare, Clock, AlertTriangle, FileText, ArrowUpRight } from "lucide-react";
+import { ShieldCheck, MapPin, CheckSquare, Clock, AlertTriangle, FileText, ArrowUpRight, Bot } from "lucide-react";
 import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { Link } from "wouter";
 
 export default function Dashboard() {
   const { data: summary, isLoading: loadingSummary } = useGetDashboardSummary({ query: { queryKey: getGetDashboardSummaryQueryKey() } });
@@ -16,6 +18,12 @@ export default function Dashboard() {
           <h1 className="text-3xl font-bold tracking-tight text-foreground">Command Center</h1>
           <p className="text-muted-foreground mt-1">Portfolio overview and recent activity.</p>
         </div>
+        <Link href="/assistant">
+          <Button className="gap-2">
+            <Bot className="w-4 h-4" />
+            Ask Franchise Brain
+          </Button>
+        </Link>
       </div>
 
       {loadingSummary ? (

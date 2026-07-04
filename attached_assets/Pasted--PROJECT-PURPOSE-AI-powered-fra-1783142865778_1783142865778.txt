@@ -1,0 +1,142 @@
+# ------------------------------
+# PROJECT PURPOSE
+# ------------------------------
+# AI-powered franchise operations intelligence SaaS.
+# Modules: Locations, Compliance, Tasks, Expansion Intelligence, Documents, AI Assistant.
+# Dashboard design uses premium logo: /mnt/data/ChatGPT Image Jul 4, 2026, 12_23_03 AM(1).png
+
+# ------------------------------
+# TECH STACK
+# ------------------------------
+# Frontend: Next.js + TypeScript + TailwindCSS + shadcn-ui
+# Backend: Node.js + Express (or API routes in Next.js)
+# Database: PostgreSQL using Prisma ORM
+# Auth: Email/password or Replit Auth for staging
+# AI: OpenAI API (Franchise Brain)
+# Styling: Light SaaS dashboard with dark sidebar, premium logo integration
+# Monorepo: PNPM workspaces
+
+# ------------------------------
+# DIRECTORY STRUCTURE
+# ------------------------------
+# /artifacts/client-intake        -> Next.js frontend
+# /artifacts/api-server           -> Node/Express backend
+# /lib/db                         -> Prisma ORM + schema
+# /lib/upload-rules               -> Shared upload validation
+# /lib/api-client-react           -> React API hooks
+# /lib/api-zod                    -> Zod schema validation
+# /docs                           -> Deployment / instructions
+# /assets/logo                    -> Place uploaded logo file here
+
+# ------------------------------
+# ENVIRONMENT VARIABLES (.env)
+# ------------------------------
+DATABASE_URL=postgres://postgres:password@localhost:5432/franchiseintelligence
+PORT=3001
+OPENAI_API_KEY=your_openai_api_key_here
+SESSION_SECRET=your_session_secret_here
+WORKSPACE_ID=default
+
+# ------------------------------
+# FRONTEND SETUP
+# ------------------------------
+cd artifacts/client-intake
+pnpm install
+# Add premium logo to /public/assets/logo/logo.png
+# Example: mv /mnt/data/ChatGPT\ Image\ Jul\ 4\,\ 2026\,\ 12_23_03\ AM\(1\).png public/assets/logo/logo.png
+
+pnpm dev     # Start dev server
+pnpm build   # Build production
+pnpm preview # Preview
+
+# ------------------------------
+# BACKEND / API SETUP
+# ------------------------------
+cd ../../artifacts/api-server
+pnpm install
+
+# Health check
+pnpm start:dev
+# Core routes:
+# - /api/locations
+# - /api/licenses
+# - /api/compliance
+# - /api/tasks
+# - /api/audits
+# - /api/documents
+# - /api/ai/chat (AI proxy, queries DB + SOPs)
+# Auth middleware + RBAC required
+
+# ------------------------------
+# DATABASE SETUP
+# ------------------------------
+cd ../../lib/db
+pnpm install
+
+# Prisma commands
+pnpm prisma generate
+pnpm prisma migrate dev
+
+# Tables:
+# - Users (roles, sessions)
+# - FranchiseLocations (name, state, owner, compliance score)
+# - Licenses (type, state, expiration, status)
+# - ComplianceChecks (linked to locations)
+# - Tasks (linked to locations & compliance)
+# - Audits (location history)
+# - Documents (SOPs, agreements)
+# - AIConversations & AIMessages
+
+# ------------------------------
+# AI ASSISTANT
+# ------------------------------
+# POST /api/ai/chat
+# 1. Accept user question
+# 2. Pull DB context (locations, SOPs, compliance, audits)
+# 3. Send to OpenAI API
+# 4. Return structured bullet points + next actions
+# 5. Persist conversation in AIConversation & AIMessage
+
+# ------------------------------
+# DOCUMENT UPLOAD
+# ------------------------------
+# Validate per /lib/upload-rules
+# Link to locations/tasks
+# AI searchable
+# Secure storage
+
+# ------------------------------
+# DASHBOARD & LOGO INTEGRATION
+# ------------------------------
+# - Light SaaS dashboard with dark sidebar
+# - Top-left: premium logo from /public/assets/logo/logo.png
+# - Widgets: Total Locations, Avg Compliance, Expiring Licenses, Open Tasks, Risk Alerts
+# - Locations table with compliance score, risk level, open tasks, training completion
+# - AI Assistant panel with "Ask Franchise Brain" button
+# - Expansion Intelligence & Document Hub modules styled to match premium dashboard
+# - Light background for workspace, dark sidebar, compliance colors (green/yellow/red)
+# - Responsive for desktop & tablet
+
+# ------------------------------
+# BUILD & RUN
+# ------------------------------
+pnpm install
+pnpm --filter artifacts/client-intake build
+pnpm --filter artifacts/api-server build
+pnpm --filter lib/db prisma generate
+
+# Start backend: PORT=3001
+# Start frontend: pnpm dev in client-intake
+# Dashboard should render logo and all modules
+
+# ------------------------------
+# NOTES
+# ------------------------------
+# - Ensure .env is gitignored
+# - RBAC required: Admin / Manager / User roles
+# - Tasks auto-generated from compliance rules
+# - Compliance scoring 0-100 → green/yellow/red
+# - Expansion intelligence: readiness per state
+# - AI must cite sources from DB/SOPs
+# - All modules persist in Postgres (no localStorage)
+# - Optional: Dockerfile or Replit .replit config for one-click run

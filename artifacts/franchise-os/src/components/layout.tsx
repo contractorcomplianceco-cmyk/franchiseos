@@ -8,6 +8,7 @@ import {
   FileText,
   MessageSquare,
 } from "lucide-react";
+import logoIcon from "@/assets/logo-icon.png";
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
@@ -26,12 +27,17 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     <div className="flex h-screen overflow-hidden bg-background">
       {/* Sidebar */}
       <aside className="w-64 flex-shrink-0 bg-sidebar border-r border-sidebar-border text-sidebar-foreground flex flex-col">
-        <div className="h-16 flex items-center px-6 border-b border-sidebar-border">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded bg-primary flex items-center justify-center text-primary-foreground font-bold">
-              F
+        <div className="h-20 flex items-center px-5 border-b border-sidebar-border">
+          <div className="flex items-center gap-3">
+            <img src={logoIcon} alt="FranchiseIntelligenceOS" className="h-11 w-auto flex-shrink-0" />
+            <div className="min-w-0">
+              <div className="font-semibold text-[15px] leading-tight tracking-tight whitespace-nowrap">
+                FranchiseIntelligence<span className="text-blue-400">OS</span>
+              </div>
+              <div className="text-[9px] tracking-[0.18em] text-sidebar-foreground/50 uppercase mt-0.5">
+                Intelligence. Compliance. Growth.
+              </div>
             </div>
-            <span className="font-semibold text-lg tracking-tight">FranchiseOS</span>
           </div>
         </div>
         

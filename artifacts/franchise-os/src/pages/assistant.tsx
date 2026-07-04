@@ -126,7 +126,7 @@ export default function Assistant() {
         <CardHeader className="py-4 border-b bg-muted/30">
           <CardTitle className="flex items-center gap-2 text-lg">
             <Bot className="w-5 h-5 text-primary" />
-            FranchiseOS Assistant
+            Franchise Brain
           </CardTitle>
         </CardHeader>
         
@@ -158,7 +158,7 @@ export default function Assistant() {
                   <div className="flex items-center gap-2 mb-1">
                     {msg.role === 'user' ? <User className="w-3 h-3" /> : <Bot className="w-3 h-3" />}
                     <span className="text-xs opacity-70 font-medium tracking-wide uppercase">
-                      {msg.role === 'user' ? 'You' : 'Assistant'}
+                      {msg.role === 'user' ? 'You' : 'Franchise Brain'}
                     </span>
                   </div>
                   <div className="whitespace-pre-wrap text-sm leading-relaxed">{msg.content}</div>
