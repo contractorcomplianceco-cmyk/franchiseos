@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { useUser, useClerk } from "@clerk/react";
 import { useGetCurrentUser, getGetCurrentUserQueryKey, useGetNotifications, getGetNotificationsQueryKey } from "@workspace/api-client-react";
-import logoIcon from "@/assets/logo-icon.png";
+import logoIcon from "@/assets/logo-mark-v2.png";
 import { useNotifications } from "@/hooks/use-notifications";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
