@@ -17,7 +17,7 @@ import {
   Quote,
   Check,
 } from "lucide-react";
-import logoIcon from "@/assets/logo-mark-v2.png";
+import logoIcon from "@/assets/logo-mark-v3.png";
 import logoFull from "@/assets/logo-full.png";
 
 const modules = [
