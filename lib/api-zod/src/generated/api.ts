@@ -478,6 +478,9 @@ export const ListDocumentsResponseItem = zod.object({
   "name": zod.string(),
   "category": zod.string(),
   "content": zod.string().nullish(),
+  "objectPath": zod.string().nullish(),
+  "fileType": zod.string().nullish(),
+  "fileSize": zod.number().nullish(),
   "uploadedAt": zod.string()
 })
 export const ListDocumentsResponse = zod.array(ListDocumentsResponseItem)
@@ -495,7 +498,10 @@ export const CreateDocumentBody = zod.object({
   "taskId": zod.number().optional(),
   "name": zod.string().min(1),
   "category": zod.string().min(1),
-  "content": zod.string().optional()
+  "content": zod.string().optional(),
+  "objectPath": zod.string().optional(),
+  "fileType": zod.string().optional(),
+  "fileSize": zod.number().optional()
 })
 
 export const CreateDocumentResponse = zod.object({
@@ -505,6 +511,9 @@ export const CreateDocumentResponse = zod.object({
   "name": zod.string(),
   "category": zod.string(),
   "content": zod.string().nullish(),
+  "objectPath": zod.string().nullish(),
+  "fileType": zod.string().nullish(),
+  "fileSize": zod.number().nullish(),
   "uploadedAt": zod.string()
 })
 
@@ -523,6 +532,9 @@ export const GetDocumentResponse = zod.object({
   "name": zod.string(),
   "category": zod.string(),
   "content": zod.string().nullish(),
+  "objectPath": zod.string().nullish(),
+  "fileType": zod.string().nullish(),
+  "fileSize": zod.number().nullish(),
   "uploadedAt": zod.string()
 })
 
@@ -593,6 +605,75 @@ export const SendChatMessageResponse = zod.object({
 
 
 /**
+ * @summary Current real-time alerts (expiring licenses, overdue tasks)
+ */
+export const GetNotificationsResponse = zod.object({
+  "notifications": zod.array(zod.object({
+  "id": zod.string(),
+  "type": zod.enum(['license_expiring', 'task_overdue']),
+  "severity": zod.enum(['warning', 'critical']),
+  "title": zod.string(),
+  "message": zod.string(),
+  "locationName": zod.string().nullish(),
+  "entityId": zod.number().nullish(),
+  "createdAt": zod.string()
+}))
+})
+
+
+/**
+ * Returns a presigned GCS URL for direct upload. The client sends JSON
+ * metadata here, then uploads the file directly to the returned URL.
+ * @summary Request a presigned URL for file upload
+ */
+
+
+
+
+
+export const RequestUploadUrlBody = zod.object({
+  "name": zod.string().min(1),
+  "size": zod.number().min(1),
+  "contentType": zod.string().min(1)
+})
+
+
+
+
+
+
+export const RequestUploadUrlResponse = zod.object({
+  "uploadURL": zod.string().url(),
+  "objectPath": zod.string(),
+  "metadata": zod.object({
+  "name": zod.string().min(1),
+  "size": zod.number().min(1),
+  "contentType": zod.string().min(1)
+}).optional()
+})
+
+
+/**
+ * @summary Serve a public asset from PUBLIC_OBJECT_SEARCH_PATHS
+ */
+export const GetPublicObjectParams = zod.object({
+  "filePath": zod.coerce.string()
+})
+
+export const GetPublicObjectResponse = zod.unknown()
+
+
+/**
+ * @summary Serve an object entity from PRIVATE_OBJECT_DIR
+ */
+export const GetStorageObjectParams = zod.object({
+  "objectPath": zod.coerce.string()
+})
+
+export const GetStorageObjectResponse = zod.unknown()
+
+
+/**
  * @summary Portfolio-wide summary metrics
  */
 export const GetDashboardSummaryResponse = zod.object({
@@ -603,7 +684,8 @@ export const GetDashboardSummaryResponse = zod.object({
   "overdueTasks": zod.number(),
   "expiringLicenses": zod.number(),
   "failedChecks": zod.number(),
-  "documentsCount": zod.number()
+  "documentsCount": zod.number(),
+  "riskAlerts": zod.number()
 })
 
 

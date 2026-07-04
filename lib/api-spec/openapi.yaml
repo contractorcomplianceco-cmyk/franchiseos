@@ -18,6 +18,9 @@ tags:
   - name: ai
   - name: dashboard
   - name: expansion
+  - name: notifications
+  - name: Storage
+    description: Object storage upload and serving endpoints.
 paths:
   /healthz:
     get:
@@ -567,6 +570,113 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ChatResponse"
+  /notifications:
+    get:
+      operationId: getNotifications
+      tags: [notifications]
+      summary: Current real-time alerts (expiring licenses, overdue tasks)
+      responses:
+        "200":
+          description: Notifications
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationsResponse"
+  /storage/uploads/request-url:
+    post:
+      tags: [Storage]
+      operationId: requestUploadUrl
+      summary: Request a presigned URL for file upload
+      description: |
+        Returns a presigned GCS URL for direct upload. The client sends JSON
+        metadata here, then uploads the file directly to the returned URL.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UploadUrlRequest"
+      responses:
+        "200":
+          description: Presigned upload URL generated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UploadUrlResponse"
+        "400":
+          description: Missing or invalid required fields.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to generate upload URL.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+  /storage/public-objects/{filePath}:
+    get:
+      tags: [Storage]
+      operationId: getPublicObject
+      summary: Serve a public asset from PUBLIC_OBJECT_SEARCH_PATHS
+      parameters:
+        - name: filePath
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Object content streamed with correct Content-Type.
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+        "404":
+          description: File not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to serve public object.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+  /storage/objects/{objectPath}:
+    get:
+      tags: [Storage]
+      operationId: getStorageObject
+      summary: Serve an object entity from PRIVATE_OBJECT_DIR
+      parameters:
+        - name: objectPath
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Object content streamed with correct Content-Type.
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+        "404":
+          description: Object not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to serve object.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
   /dashboard/summary:
     get:
       operationId: getDashboardSummary
@@ -784,6 +894,9 @@ components:
         name: { type: string }
         category: { type: string }
         content: { type: ["string", "null"] }
+        objectPath: { type: ["string", "null"] }
+        fileType: { type: ["string", "null"] }
+        fileSize: { type: ["integer", "null"] }
         uploadedAt: { type: string }
     DocumentInput:
       type: object
@@ -794,6 +907,9 @@ components:
         name: { type: string, minLength: 1 }
         category: { type: string, minLength: 1 }
         content: { type: string }
+        objectPath: { type: string }
+        fileType: { type: string }
+        fileSize: { type: integer }
     Conversation:
       type: object
       required: [id, title, createdAt]
@@ -824,7 +940,7 @@ components:
         reply: { type: string }
     DashboardSummary:
       type: object
-      required: [totalLocations, activeLocations, avgComplianceScore, openTasks, overdueTasks, expiringLicenses, failedChecks, documentsCount]
+      required: [totalLocations, activeLocations, avgComplianceScore, openTasks, overdueTasks, expiringLicenses, failedChecks, documentsCount, riskAlerts]
       properties:
         totalLocations: { type: integer }
         activeLocations: { type: integer }
@@ -834,6 +950,47 @@ components:
         expiringLicenses: { type: integer }
         failedChecks: { type: integer }
         documentsCount: { type: integer }
+        riskAlerts: { type: integer }
+    UploadUrlRequest:
+      type: object
+      required: [name, size, contentType]
+      properties:
+        name: { type: string, minLength: 1 }
+        size: { type: integer, minimum: 1 }
+        contentType: { type: string, minLength: 1 }
+    UploadUrlResponse:
+      type: object
+      required: [uploadURL, objectPath]
+      properties:
+        uploadURL: { type: string, format: uri }
+        objectPath: { type: string }
+        metadata:
+          $ref: "#/components/schemas/UploadUrlRequest"
+    ErrorEnvelope:
+      type: object
+      required: [error]
+      properties:
+        error: { type: string }
+    Notification:
+      type: object
+      required: [id, type, severity, title, message, createdAt]
+      properties:
+        id: { type: string }
+        type: { type: string, enum: [license_expiring, task_overdue] }
+        severity: { type: string, enum: [warning, critical] }
+        title: { type: string }
+        message: { type: string }
+        locationName: { type: ["string", "null"] }
+        entityId: { type: ["integer", "null"] }
+        createdAt: { type: string }
+    NotificationsResponse:
+      type: object
+      required: [notifications]
+      properties:
+        notifications:
+          type: array
+          items:
+            $ref: "#/components/schemas/Notification"
     ActivityItem:
       type: object
       required: [id, type, description, timestamp]

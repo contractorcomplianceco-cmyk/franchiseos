@@ -12,6 +12,7 @@ import {
   DeleteTaskParams,
 } from "@workspace/api-zod";
 import { toIso } from "../lib/serialize";
+import { broadcastNotifications } from "../lib/realtime";
 
 const router: IRouter = Router();
 
@@ -41,6 +42,7 @@ router.post("/tasks", async (req, res): Promise<void> => {
     return;
   }
   const [row] = await db.insert(tasks).values(parsed.data).returning();
+  void broadcastNotifications();
   res.status(201).json(CreateTaskResponse.parse(toIso(row, ["createdAt"])));
 });
 
@@ -64,6 +66,7 @@ router.patch("/tasks/:id", async (req, res): Promise<void> => {
     res.status(404).json({ error: "Task not found" });
     return;
   }
+  void broadcastNotifications();
   res.json(UpdateTaskResponse.parse(toIso(row, ["createdAt"])));
 });
 
@@ -81,6 +84,7 @@ router.delete("/tasks/:id", async (req, res): Promise<void> => {
     res.status(404).json({ error: "Task not found" });
     return;
   }
+  void broadcastNotifications();
   res.sendStatus(204);
 });
 

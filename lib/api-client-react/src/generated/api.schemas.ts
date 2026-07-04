@@ -332,6 +332,12 @@ export interface Document {
   category: string;
   /** @nullable */
   content?: string | null;
+  /** @nullable */
+  objectPath?: string | null;
+  /** @nullable */
+  fileType?: string | null;
+  /** @nullable */
+  fileSize?: number | null;
   uploadedAt: string;
 }
 
@@ -343,6 +349,9 @@ export interface DocumentInput {
   /** @minLength 1 */
   category: string;
   content?: string;
+  objectPath?: string;
+  fileType?: string;
+  fileSize?: number;
 }
 
 export interface Conversation {
@@ -387,6 +396,59 @@ export interface DashboardSummary {
   expiringLicenses: number;
   failedChecks: number;
   documentsCount: number;
+  riskAlerts: number;
+}
+
+export interface UploadUrlRequest {
+  /** @minLength 1 */
+  name: string;
+  /** @minimum 1 */
+  size: number;
+  /** @minLength 1 */
+  contentType: string;
+}
+
+export interface UploadUrlResponse {
+  uploadURL: string;
+  objectPath: string;
+  metadata?: UploadUrlRequest;
+}
+
+export interface ErrorEnvelope {
+  error: string;
+}
+
+export type NotificationType = typeof NotificationType[keyof typeof NotificationType];
+
+
+export const NotificationType = {
+  license_expiring: 'license_expiring',
+  task_overdue: 'task_overdue',
+} as const;
+
+export type NotificationSeverity = typeof NotificationSeverity[keyof typeof NotificationSeverity];
+
+
+export const NotificationSeverity = {
+  warning: 'warning',
+  critical: 'critical',
+} as const;
+
+export interface Notification {
+  id: string;
+  type: NotificationType;
+  severity: NotificationSeverity;
+  title: string;
+  message: string;
+  /** @nullable */
+  locationName?: string | null;
+  /** @nullable */
+  entityId?: number | null;
+  createdAt: string;
+}
+
+export interface NotificationsResponse {
+  notifications: Notification[];
 }
 
 export type ActivityItemType = typeof ActivityItemType[keyof typeof ActivityItemType];

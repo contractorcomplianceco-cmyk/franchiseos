@@ -6,15 +6,11 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface DocumentInput {
-  locationId?: number;
-  taskId?: number;
+export interface UploadUrlRequest {
   /** @minLength 1 */
   name: string;
+  /** @minimum 1 */
+  size: number;
   /** @minLength 1 */
-  category: string;
-  content?: string;
-  objectPath?: string;
-  fileType?: string;
-  fileSize?: number;
+  contentType: string;
 }

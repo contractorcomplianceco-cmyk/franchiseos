@@ -11,6 +11,8 @@ import documentsRouter from "./documents";
 import dashboardRouter from "./dashboard";
 import expansionRouter from "./expansion";
 import aiRouter from "./ai";
+import notificationsRouter from "./notifications";
+import storageRouter from "./storage";
 
 const router: IRouter = Router();
 
@@ -47,5 +49,7 @@ router.use(auditsRouter);
 router.use(documentsRouter);
 router.use(dashboardRouter);
 router.use(expansionRouter);
+router.use(notificationsRouter);
+router.use(storageRouter);
 
 export default router;

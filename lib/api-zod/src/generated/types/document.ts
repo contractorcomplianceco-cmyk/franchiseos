@@ -16,5 +16,11 @@ export interface Document {
   category: string;
   /** @nullable */
   content?: string | null;
+  /** @nullable */
+  objectPath?: string | null;
+  /** @nullable */
+  fileType?: string | null;
+  /** @nullable */
+  fileSize?: number | null;
   uploadedAt: string;
 }

@@ -15,4 +15,5 @@ export interface DashboardSummary {
   expiringLicenses: number;
   failedChecks: number;
   documentsCount: number;
+  riskAlerts: number;
 }

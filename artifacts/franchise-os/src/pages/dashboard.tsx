@@ -1,7 +1,7 @@
 import { useGetDashboardSummary, getGetDashboardSummaryQueryKey, useGetRecentActivity, getGetRecentActivityQueryKey } from "@workspace/api-client-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ShieldCheck, MapPin, CheckSquare, Clock, AlertTriangle, FileText, ArrowUpRight, Bot } from "lucide-react";
+import { ShieldCheck, MapPin, CheckSquare, Clock, AlertTriangle, FileText, ArrowUpRight, Bot, Activity } from "lucide-react";
 import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,7 @@ export default function Dashboard() {
           <p className="text-muted-foreground mt-1">Portfolio overview and recent activity.</p>
         </div>
         <Link href="/assistant">
-          <Button className="gap-2">
+          <Button className="gap-2 shadow-sm">
             <Bot className="w-4 h-4" />
             Ask Franchise Brain
           </Button>
@@ -27,13 +27,32 @@ export default function Dashboard() {
       </div>
 
       {loadingSummary ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+          {[1, 2, 3, 4, 5].map((i) => (
             <Skeleton key={i} className="h-32 rounded-xl" />
           ))}
         </div>
       ) : summary ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+          <Card className="col-span-1 lg:col-span-1 relative overflow-hidden group hover:border-destructive/50 transition-colors border-destructive/20 bg-destructive/5">
+            <div className="absolute inset-0 bg-gradient-to-br from-destructive/10 to-transparent pointer-events-none" />
+            <CardHeader className="flex flex-row items-center justify-between pb-2 relative z-10">
+              <CardTitle className="text-sm font-medium text-destructive">Risk Alerts</CardTitle>
+              <Activity className="h-4 w-4 text-destructive" />
+            </CardHeader>
+            <CardContent className="relative z-10">
+              <div className="text-3xl font-bold text-destructive">{summary.riskAlerts}</div>
+              <p className="text-xs text-destructive/80 mt-1">Active urgent items</p>
+              {summary.riskAlerts > 0 && (
+                <div className="mt-2">
+                  <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/20 shadow-none">
+                    Requires action
+                  </Badge>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+          
           <StatCard title="Total Locations" value={summary.totalLocations} subtitle={`${summary.activeLocations} active`} icon={MapPin} />
           <StatCard 
             title="Avg Compliance" 
@@ -42,14 +61,12 @@ export default function Dashboard() {
             trend={summary.avgComplianceScore >= 80 ? "positive" : summary.avgComplianceScore < 50 ? "negative" : "neutral"}
           />
           <StatCard title="Open Tasks" value={summary.openTasks} subtitle={`${summary.overdueTasks} overdue`} icon={CheckSquare} trend={summary.overdueTasks > 0 ? "negative" : "neutral"} />
-          <StatCard title="Failed Checks" value={summary.failedChecks} icon={AlertTriangle} trend={summary.failedChecks > 0 ? "negative" : "positive"} />
           <StatCard title="Expiring Licenses" value={summary.expiringLicenses} icon={Clock} trend={summary.expiringLicenses > 0 ? "warning" : "positive"} />
-          <StatCard title="Documents" value={summary.documentsCount} icon={FileText} />
         </div>
       ) : null}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <Card className="lg:col-span-2">
+        <Card className="lg:col-span-2 glass">
           <CardHeader>
             <CardTitle>Recent Activity</CardTitle>
           </CardHeader>
@@ -62,10 +79,11 @@ export default function Dashboard() {
               </div>
             ) : activity && activity.length > 0 ? (
               <div className="space-y-6">
-                {activity.map((item) => (
-                  <div key={item.id} className="flex gap-4">
-                    <div className="mt-1">
-                      <div className={`p-2 rounded-full ${
+                {activity.map((item, index) => (
+                  <div key={item.id} className="flex gap-4 animate-in slide-in-from-bottom-2 fade-in" style={{ animationDelay: `${index * 50}ms`, animationFillMode: 'both' }}>
+                    <div className="mt-1 relative">
+                      <div className="absolute inset-0 bg-current opacity-20 blur-sm rounded-full" />
+                      <div className={`relative p-2 rounded-full shadow-sm ${
                         item.type === 'compliance' ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/30' :
                         item.type === 'task' ? 'bg-purple-100 text-purple-600 dark:bg-purple-900/30' :
                         item.type === 'audit' ? 'bg-amber-100 text-amber-600 dark:bg-amber-900/30' :
@@ -103,10 +121,10 @@ export default function Dashboard() {
 
 function StatCard({ title, value, subtitle, icon: Icon, trend }: { title: string, value: string | number, subtitle?: string, icon: any, trend?: "positive" | "negative" | "warning" | "neutral" }) {
   return (
-    <Card>
+    <Card className="glass group hover:border-primary/30 transition-colors">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
-        <Icon className="h-4 w-4 text-muted-foreground" />
+        <CardTitle className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">{title}</CardTitle>
+        <Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">{value}</div>
@@ -114,9 +132,9 @@ function StatCard({ title, value, subtitle, icon: Icon, trend }: { title: string
         {trend && (
           <div className="mt-2">
             <Badge variant="outline" className={`
-              ${trend === 'positive' ? 'text-green-600 bg-green-50 border-green-200 dark:bg-green-950/20' : 
-                trend === 'negative' ? 'text-red-600 bg-red-50 border-red-200 dark:bg-red-950/20' : 
-                trend === 'warning' ? 'text-amber-600 bg-amber-50 border-amber-200 dark:bg-amber-950/20' : ''}
+              ${trend === 'positive' ? 'text-green-600 bg-green-50/50 border-green-200 dark:bg-green-950/20 shadow-sm' : 
+                trend === 'negative' ? 'text-red-600 bg-red-50/50 border-red-200 dark:bg-red-950/20 shadow-sm' : 
+                trend === 'warning' ? 'text-amber-600 bg-amber-50/50 border-amber-200 dark:bg-amber-950/20 shadow-sm' : ''}
             `}>
               {trend}
             </Badge>

@@ -16,6 +16,9 @@ export const documents = pgTable("documents", {
   name: text("name").notNull(),
   category: text("category").notNull(),
   content: text("content"),
+  objectPath: text("object_path"),
+  fileType: text("file_type"),
+  fileSize: integer("file_size"),
   uploadedAt: timestamp("uploaded_at", { withTimezone: true }).defaultNow().notNull(),
 });
 

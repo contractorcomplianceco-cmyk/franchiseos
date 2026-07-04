@@ -36,17 +36,26 @@ router.get("/dashboard/summary", async (_req, res): Promise<void> => {
   const today = new Date().toISOString().slice(0, 10);
   const openTasks = allTasks.filter((t) => t.status !== "done");
 
+  const overdueTasks = openTasks.filter(
+    (t) => t.dueDate && t.dueDate < today,
+  ).length;
+  const expiringLicenses = allLicenses.filter(
+    (l) => licenseStatus(l.expiryDate) !== "valid",
+  ).length;
+  const failedChecks = allChecks.filter((c) => c.status === "fail").length;
+
   const data = {
     totalLocations: allLocations.length,
     activeLocations: allLocations.filter((l) => l.status === "active").length,
     avgComplianceScore,
     openTasks: openTasks.length,
-    overdueTasks: openTasks.filter((t) => t.dueDate && t.dueDate < today).length,
-    expiringLicenses: allLicenses.filter(
-      (l) => licenseStatus(l.expiryDate) !== "valid",
-    ).length,
-    failedChecks: allChecks.filter((c) => c.status === "fail").length,
+    overdueTasks,
+    expiringLicenses,
+    failedChecks,
     documentsCount: allDocuments.length,
+    // Risk Alerts = the total count of conditions that need attention:
+    // overdue tasks, expiring/expired licenses, and failed compliance checks.
+    riskAlerts: overdueTasks + expiringLicenses + failedChecks,
   };
 
   res.json(GetDashboardSummaryResponse.parse(data));

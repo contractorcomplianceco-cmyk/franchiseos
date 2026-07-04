@@ -29,6 +29,10 @@ AI-powered franchise operations platform: track locations, licenses, compliance 
 - `artifacts/api-server/src/routes/` — one router per domain, mounted in `routes/index.ts` (all under `/api`)
 - `artifacts/api-server/src/lib/scores.ts` — computed values: location compliance score (avg of check scores), license status (valid/expiring/expired)
 - `artifacts/api-server/src/lib/serialize.ts` — Date→ISO-string serializer for Zod response parsing
+- `artifacts/api-server/src/lib/realtime.ts` — socket.io setup, socket Clerk-cookie auth, `computeNotifications()`, `broadcastNotifications()` (called from license/task mutations + 60s interval)
+- `artifacts/api-server/src/lib/objectStorage.ts` + `objectAcl.ts` — presigned upload URLs + object serving/ACL; routes in `routes/storage.ts`; alerts feed in `routes/notifications.ts`
+- `artifacts/franchise-os/src/hooks/use-notifications.ts` — shared socket.io client (`hasData` gate switches UI from REST seed to live pushes)
+- `lib/object-storage-web/` — Uppy `ObjectUploader` React component (non-composite lib imported as source; see memory: needs react in its own devDeps)
 - `artifacts/franchise-os/src/pages/` — dashboard, locations, location-detail, compliance, tasks, expansion, documents, assistant
 
 ## Auth & Roles
@@ -53,13 +57,14 @@ AI-powered franchise operations platform: track locations, licenses, compliance 
 
 ## Product
 
-- Dashboard: portfolio KPIs + recent activity feed
+- Dashboard: portfolio KPIs (incl. "Risk Alerts" KPI = count of expiring/expired licenses + overdue open tasks) + recent activity feed
 - Locations: CRUD + detail view with per-location licenses, checks, audits, documents
-- Compliance: 0-100 scoring (≥80 green, 50-79 yellow, <50 red)
+- Compliance: 0-100 scoring (≥80 green, 50-79 yellow, <50 red) + recharts viz (status pie, avg-score bar, trend area, location×category risk heatmap)
 - Tasks: todo/in_progress/done with manual and auto-created compliance tasks
 - Expansion: readiness score and recommendation per US state
-- Documents: searchable SOP/policy/note library
+- Documents: searchable SOP/policy/note library with real file uploads (Uppy → presigned PUT → object storage; served at `/api/storage{objectPath}`)
 - AI Assistant: multi-conversation chat grounded in live DB data with citations
+- Realtime notifications: socket.io bell in top bar; server pushes license-expiring & task-overdue alerts on mutation and on a 60s interval
 
 ## User preferences
 

@@ -12,6 +12,7 @@ import {
   DeleteLicenseParams,
 } from "@workspace/api-zod";
 import { licenseStatus } from "../lib/scores";
+import { broadcastNotifications } from "../lib/realtime";
 
 const router: IRouter = Router();
 
@@ -38,6 +39,7 @@ router.post("/licenses", async (req, res): Promise<void> => {
     return;
   }
   const [row] = await db.insert(licenses).values(parsed.data).returning();
+  void broadcastNotifications();
   res
     .status(201)
     .json(CreateLicenseResponse.parse({ ...row, status: licenseStatus(row.expiryDate) }));
@@ -63,6 +65,7 @@ router.patch("/licenses/:id", async (req, res): Promise<void> => {
     res.status(404).json({ error: "License not found" });
     return;
   }
+  void broadcastNotifications();
   res.json(UpdateLicenseResponse.parse({ ...row, status: licenseStatus(row.expiryDate) }));
 });
 
@@ -80,6 +83,7 @@ router.delete("/licenses/:id", async (req, res): Promise<void> => {
     res.status(404).json({ error: "License not found" });
     return;
   }
+  void broadcastNotifications();
   res.sendStatus(204);
 });
 
