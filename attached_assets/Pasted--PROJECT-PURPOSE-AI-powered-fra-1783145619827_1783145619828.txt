@@ -1,0 +1,132 @@
+# ------------------------------
+# PROJECT PURPOSE
+# ------------------------------
+# AI-powered franchise operations intelligence SaaS
+# Centralized command center for franchise compliance, location management, licensing, audits, tasks, training, and expansion intelligence.
+# Premium UI/UX with high-resolution logo: /mnt/data/a_high_resolution_screenshot_of_a_dark_themed_blue.png
+
+# ------------------------------
+# TECH STACK
+# ------------------------------
+# Frontend: Next.js + TypeScript + TailwindCSS + Headless UI + shadcn-ui
+# Backend: Node.js + Express / Next.js API routes
+# Database: PostgreSQL + Prisma ORM
+# Auth: Email/password or Replit Auth
+# AI: OpenAI API ("Franchise Brain")
+# Realtime updates: socket.io
+# Styling: Dark sidebar, light main content, gradient highlights, 3D/glassmorphism panels
+
+# ------------------------------
+# DIRECTORY STRUCTURE
+# ------------------------------
+# /artifacts/client-intake       -> Next.js frontend
+# /artifacts/api-server          -> Node/Express backend
+# /lib/db                        -> Prisma ORM + schema
+# /lib/api-client-react          -> React API hooks
+# /lib/upload-rules              -> Upload validation
+# /assets/logo                   -> Place premium logo here
+
+# ------------------------------
+# ENVIRONMENT VARIABLES (.env)
+# ------------------------------
+DATABASE_URL=postgres://postgres:password@localhost:5432/franchiseintelligence
+PORT=3001
+OPENAI_API_KEY=your_openai_api_key_here
+SESSION_SECRET=your_session_secret_here
+WORKSPACE_ID=default
+
+# ------------------------------
+# FRONTEND SETUP
+# ------------------------------
+cd artifacts/client-intake
+pnpm install
+# Place premium logo:
+# mv /mnt/data/a_high_resolution_screenshot_of_a_dark_themed_blue.png public/assets/logo/logo.png
+pnpm dev     # Start development server
+pnpm build   # Production build
+pnpm preview # Preview
+
+# ------------------------------
+# BACKEND / API SETUP
+# ------------------------------
+cd ../../artifacts/api-server
+pnpm install
+# Core endpoints:
+# - /api/locations
+# - /api/licenses
+# - /api/compliance
+# - /api/tasks
+# - /api/audits
+# - /api/documents
+# - /api/ai/chat (AI proxy)
+pnpm start:dev
+
+# ------------------------------
+# DATABASE SETUP
+# ------------------------------
+cd ../../lib/db
+pnpm install
+pnpm prisma generate
+pnpm prisma migrate dev
+
+# Tables:
+# - Users (roles, sessions)
+# - FranchiseLocations (name, state, owner, compliance score)
+# - Licenses (type, state, expiration, status)
+# - ComplianceChecks (linked to locations)
+# - Tasks (linked to locations & compliance)
+# - Audits (location history)
+# - Documents (SOPs, agreements)
+# - AIConversations & AIMessages
+# - ExpansionIntelligence (state readiness, risk, license complexity)
+
+# ------------------------------
+# PREMIUM DASHBOARD FEATURES
+# ------------------------------
+# - High-resolution premium logo in header/sidebar
+# - Dark sidebar with gradient highlight and hover effects
+# - Glass/3D panels for metrics: Total Locations, Avg Compliance, Expiring Licenses, Open Tasks, Risk Alerts
+# - Compliance charts: pie, trendlines, heatmaps
+# - Expanded AI Assistant:
+#   - Summarizes compliance issues per location
+#   - Suggests next actions
+#   - Pulls context from SOPs, audits, and licenses
+# - Tasks & workflows with auto-generated tasks from compliance issues
+# - Real-time notifications: WebSocket alerts for expiring licenses, overdue tasks
+# - Expansion Intelligence Module:
+#   - State readiness scores
+#   - Risk & licensing complexity
+#   - Predictive AI recommendations
+# - Document Hub:
+#   - Upload SOPs, audits, agreements
+#   - AI-searchable with flagged summaries
+
+# ------------------------------
+# AI ASSISTANT INTEGRATION
+# ------------------------------
+# POST /api/ai/chat
+# - Accept user query
+# - Pull relevant DB context
+# - Return structured response (bullet points, risk actions)
+# - Save conversation history
+
+# ------------------------------
+# BUILD & RUN
+# ------------------------------
+pnpm install
+pnpm --filter artifacts/client-intake build
+pnpm --filter artifacts/api-server build
+pnpm --filter lib/db prisma generate
+
+# Start backend: PORT=3001
+# Start frontend: pnpm dev in client-intake
+# Premium dashboard and AI assistant should render with logo and full functionality
+
+# ------------------------------
+# NOTES
+# ------------------------------
+# - RBAC required: Admin / Manager / User
+# - Auto-generate tasks from compliance rules
+# - Compliance scoring 0-100: green/yellow/red
+# - Optional Dockerfile or .replit config for one-click run
+# - Full expanded functionality for franchise intelligence
