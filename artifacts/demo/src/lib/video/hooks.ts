@@ -17,6 +17,7 @@ export interface UseVideoPlayerOptions {
   durations: SceneDurations;
   onVideoEnd?: () => void;
   loop?: boolean;
+  paused?: boolean;
 }
 
 export interface UseVideoPlayerReturn {
@@ -27,7 +28,7 @@ export interface UseVideoPlayerReturn {
 }
 
 export function useVideoPlayer(options: UseVideoPlayerOptions): UseVideoPlayerReturn {
-  const { durations, onVideoEnd, loop = true } = options;
+  const { durations, onVideoEnd, loop = true, paused = false } = options;
 
   // Captured once on mount -- durations must be a static object
   const sceneKeys = useRef(Object.keys(durations)).current;
@@ -36,6 +37,12 @@ export function useVideoPlayer(options: UseVideoPlayerOptions): UseVideoPlayerRe
 
   const [currentScene, setCurrentScene] = useState(0);
   const [hasEnded, setHasEnded] = useState(false);
+
+  // Pause/resume bookkeeping: track remaining time in the current scene so a
+  // resume continues where it left off (keeps visuals in sync with audio).
+  const sceneStartRef = useRef(0);
+  const remainingRef = useRef(0);
+  const remainingSceneRef = useRef(-1);
 
   // Start recording on mount
   useEffect(() => {
@@ -46,8 +53,16 @@ export function useVideoPlayer(options: UseVideoPlayerOptions): UseVideoPlayerRe
   useEffect(() => {
     if (hasEnded && !loop) return;
 
-    const currentDuration = durationsArray[currentScene];
+    // Entering a new scene resets the remaining-time budget to its full duration.
+    if (remainingSceneRef.current !== currentScene) {
+      remainingSceneRef.current = currentScene;
+      remainingRef.current = durationsArray[currentScene];
+    }
 
+    // While paused, hold the current remaining time and run no timer.
+    if (paused) return;
+
+    sceneStartRef.current = Date.now();
     const timer = setTimeout(() => {
       // Last scene just finished playing
       if (currentScene >= totalScenes - 1) {
@@ -62,10 +77,16 @@ export function useVideoPlayer(options: UseVideoPlayerOptions): UseVideoPlayerRe
       } else {
         setCurrentScene(prev => prev + 1);
       }
-    }, currentDuration);
+    }, remainingRef.current);
 
-    return () => clearTimeout(timer);
-  }, [currentScene, totalScenes, durationsArray, hasEnded, loop, onVideoEnd]);
+    // On cleanup (pause toggle or scene change) subtract elapsed so a resume
+    // continues from where it left off instead of restarting the scene.
+    return () => {
+      clearTimeout(timer);
+      const elapsed = Date.now() - sceneStartRef.current;
+      remainingRef.current = Math.max(0, remainingRef.current - elapsed);
+    };
+  }, [currentScene, totalScenes, durationsArray, hasEnded, loop, paused, onVideoEnd]);
 
   return {
     currentScene,

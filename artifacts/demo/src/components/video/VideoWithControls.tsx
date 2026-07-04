@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ChevronDown, ChevronUp, Repeat, Volume2, VolumeX } from 'lucide-react';
+import { ChevronDown, ChevronUp, Pause, Play, Repeat, Volume2, VolumeX } from 'lucide-react';
 import VideoTemplate, { SCENE_DURATIONS } from './VideoTemplate';
 import { useSceneControls } from './useSceneControls';
 
@@ -10,10 +10,12 @@ interface ControlBarProps {
   collapsed: boolean;
   locked: boolean;
   muted: boolean;
+  paused: boolean;
   sceneKeys: string[];
   activeIndex: number;
   activeDuration: number;
   tick: number;
+  onTogglePlay: () => void;
   onToggleLock: () => void;
   onToggleMute: () => void;
   onJumpTo: (index: number) => void;
@@ -67,8 +69,8 @@ function ProgressSegments({
 }
 
 function ControlBar({
-  visible, collapsed, locked, muted, sceneKeys, activeIndex, activeDuration, tick,
-  onToggleLock, onToggleMute, onJumpTo, onToggleCollapsed,
+  visible, collapsed, locked, muted, paused, sceneKeys, activeIndex, activeDuration, tick,
+  onTogglePlay, onToggleLock, onToggleMute, onJumpTo, onToggleCollapsed,
 }: ControlBarProps) {
   return (
     <div
@@ -79,6 +81,16 @@ function ControlBar({
       }`}
       aria-hidden={!visible}
     >
+      <button
+        onClick={onTogglePlay}
+        className="w-14 h-14 flex items-center justify-center transition-colors rounded-lg shrink-0 text-white bg-white/15 hover:bg-white/25"
+        title={paused ? 'Play' : 'Pause'}
+        aria-label={paused ? 'Play' : 'Pause'}
+        aria-pressed={!paused}
+      >
+        {paused ? <Play className="w-8 h-8" /> : <Pause className="w-8 h-8" />}
+      </button>
+
       <button
         onClick={onToggleLock}
         className={`w-14 h-14 flex items-center justify-center transition-colors rounded-lg shrink-0 ${
@@ -143,6 +155,7 @@ export default function VideoWithControls() {
   } = useSceneControls(SCENE_DURATIONS);
 
   const [muted, setMuted] = useState(true);
+  const [paused, setPaused] = useState(false);
   const sensorRef = useRef<HTMLDivElement | null>(null);
   const [collapsed, setCollapsed] = useState(false);
   const [hovering, setHovering] = useState(false);
@@ -188,6 +201,7 @@ export default function VideoWithControls() {
         durations={durations}
         loop
         muted={muted}
+        paused={paused}
         onSceneChange={onSceneChange}
       />
       <div
@@ -204,10 +218,12 @@ export default function VideoWithControls() {
           collapsed={collapsed}
           locked={locked}
           muted={muted}
+          paused={paused}
           sceneKeys={sceneKeys}
           activeIndex={activeIndex}
           activeDuration={activeDuration}
           tick={tick}
+          onTogglePlay={() => setPaused(p => !p)}
           onToggleLock={toggleLock}
           onToggleMute={() => setMuted(m => !m)}
           onJumpTo={jumpTo}

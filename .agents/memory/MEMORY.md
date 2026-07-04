@@ -1,1 +1,2 @@
 - [Narrated video-js audio](video-js-narrated-audio.md) — pre-mix bg music + per-scene VO into one composite_audio.mp3 at cumulative scene offsets; duck music low; keep each VO shorter than its scene.
+- [video-js scene pause/resume](video-js-scene-pause-resume.md) — pausing the useVideoPlayer timer must track remaining time (refs), not restart the scene, or visuals desync from resumed audio.

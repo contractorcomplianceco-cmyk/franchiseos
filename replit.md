@@ -65,8 +65,8 @@ AI-powered franchise operations platform: track locations, licenses, compliance 
 - Expansion: readiness score and recommendation per US state
 - Documents: searchable SOP/policy/note library with real file uploads (Uppy → presigned PUT → object storage; served at `/api/storage{objectPath}`)
 - AI Assistant: multi-conversation chat grounded in live DB data with citations
-- Marketing landing (`franchise-os/src/pages/landing.tsx`, signed-out only): premium hero, CSS dashboard/AI-chat mockups, modules grid, testimonials, CTA, and an embedded `/demo/` iframe (starts muted). Uses framer-motion + shadcn Button, no new deps
-- Demo video (`artifacts/demo`, video-js): ~81s narrated walkthrough (6 scenes: intro, dashboard, assistant, compliance, tasks, close) with pre-mixed composite audio (bg music + male VO) and scene/mute controls
+- Marketing landing (`franchise-os/src/pages/landing.tsx`, signed-out only): premium hero, CSS dashboard/AI-chat mockups, modules grid, testimonials, CTA, and an embedded `/demo/` iframe (starts muted). On load, a fullscreen AnimatePresence intro overlay (`showIntro`, default true) autoplays the demo; dismiss via Skip button, backdrop click, Esc, or "Explore the platform" (locks body scroll while open). The inline `#demo` iframe only mounts after the overlay is dismissed (shows a "Watch the tour" poster meanwhile) to avoid two heavy video instances. Uses framer-motion + shadcn Button, no new deps
+- Demo video (`artifacts/demo`, video-js): ~81s narrated walkthrough (6 scenes: intro, dashboard, assistant, compliance, tasks, close) with pre-mixed composite audio (bg music + male VO) and play-pause/scene/mute controls. Play/pause flows through a `paused` prop (VideoWithControls → VideoTemplate → useVideoPlayer) that tracks remaining scene time so resume stays audio-synced; export path passes no props (unaffected)
 - Realtime notifications: socket.io bell in top bar; server pushes license-expiring & task-overdue alerts on mutation and on a 60s interval
 
 ## User preferences

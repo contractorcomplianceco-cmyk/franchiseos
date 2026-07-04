@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "wouter";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
   ShieldCheck,
@@ -16,6 +16,7 @@ import {
   Play,
   Quote,
   Check,
+  X,
 } from "lucide-react";
 import logoIcon from "@/assets/logo-mark-v3.png";
 import logoFull from "@/assets/logo-full.png";
@@ -106,9 +107,100 @@ function Section({
 
 export default function Landing() {
   const [demoLoaded, setDemoLoaded] = useState(false);
+  const [showIntro, setShowIntro] = useState(true);
+  const [introLoaded, setIntroLoaded] = useState(false);
+
+  useEffect(() => {
+    if (!showIntro) return;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setShowIntro(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [showIntro]);
 
   return (
     <div className="min-h-[100dvh] bg-slate-950 text-white antialiased overflow-x-hidden">
+      {/* Autoplay intro video overlay */}
+      <AnimatePresence>
+        {showIntro && (
+          <motion.div
+            key="intro-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }}
+            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-950/92 backdrop-blur-md px-4 py-6"
+            onClick={() => setShowIntro(false)}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Product demo"
+          >
+            {/* Top bar */}
+            <div className="w-full max-w-5xl flex items-center justify-between mb-4">
+              <span className="inline-flex items-center gap-2 text-xs font-medium text-slate-300">
+                <span className="h-2 w-2 rounded-full bg-indigo-400 animate-pulse" />
+                Now playing — 90-second product tour
+              </span>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowIntro(false);
+                }}
+                className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-sm text-slate-200 hover:bg-white/10 hover:text-white transition-colors"
+              >
+                Skip <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Video frame */}
+            <motion.div
+              initial={{ scale: 0.96, y: 12 }}
+              animate={{ scale: 1, y: 0 }}
+              transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+              className="relative w-full max-w-5xl aspect-video overflow-hidden rounded-2xl border border-white/10 bg-slate-950 shadow-2xl shadow-indigo-950/50"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {!introLoaded && (
+                <div className="absolute inset-0 z-10 flex items-center justify-center bg-slate-950">
+                  <div className="flex items-center gap-3 text-slate-400 text-sm">
+                    <span className="h-2 w-2 animate-pulse rounded-full bg-indigo-400" />
+                    Loading demo…
+                  </div>
+                </div>
+              )}
+              <iframe
+                src="/demo/"
+                title="FranchiseIntelligenceOS product demo"
+                className="absolute inset-0 h-full w-full"
+                onLoad={() => setIntroLoaded(true)}
+                allow="autoplay; fullscreen"
+              />
+            </motion.div>
+
+            {/* Bottom hint + dismiss */}
+            <div className="mt-5 flex flex-col items-center gap-3">
+              <p className="text-xs text-slate-400">
+                Starts muted — use the volume button in the video to hear the narration.
+              </p>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowIntro(false);
+                }}
+                className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-2.5 text-sm font-semibold text-slate-900 hover:bg-slate-200 transition-colors"
+              >
+                Explore the platform <ArrowRight className="h-4 w-4" />
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Ambient background */}
       <div className="pointer-events-none fixed inset-0 z-0">
         <div className="absolute -top-40 left-1/4 h-[42rem] w-[42rem] -translate-x-1/2 rounded-full bg-indigo-600/20 blur-[140px]" />
@@ -331,24 +423,38 @@ export default function Landing() {
 
           <div className="relative rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.07] to-white/[0.02] p-3 md:p-4 shadow-2xl shadow-indigo-950/40">
             <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-white/10 bg-slate-950">
-              {!demoLoaded && (
+              {(!demoLoaded || showIntro) && (
                 <div className="absolute inset-0 z-10 flex items-center justify-center bg-slate-950">
-                  <div className="flex items-center gap-3 text-slate-400 text-sm">
-                    <span className="h-2 w-2 animate-pulse rounded-full bg-indigo-400" />
-                    Loading demo…
-                  </div>
+                  {showIntro ? (
+                    <button
+                      onClick={() => setShowIntro(true)}
+                      className="flex flex-col items-center gap-3 text-slate-300 hover:text-white transition-colors"
+                    >
+                      <span className="flex h-16 w-16 items-center justify-center rounded-full bg-white/10 border border-white/15">
+                        <Play className="h-7 w-7 translate-x-0.5" />
+                      </span>
+                      <span className="text-sm">Watch the tour</span>
+                    </button>
+                  ) : (
+                    <div className="flex items-center gap-3 text-slate-400 text-sm">
+                      <span className="h-2 w-2 animate-pulse rounded-full bg-indigo-400" />
+                      Loading demo…
+                    </div>
+                  )}
                 </div>
               )}
-              <iframe
-                src="/demo/"
-                title="FranchiseIntelligenceOS product demo"
-                className="absolute inset-0 h-full w-full"
-                onLoad={() => setDemoLoaded(true)}
-                allow="autoplay; fullscreen"
-              />
+              {!showIntro && (
+                <iframe
+                  src="/demo/"
+                  title="FranchiseIntelligenceOS product demo"
+                  className="absolute inset-0 h-full w-full"
+                  onLoad={() => setDemoLoaded(true)}
+                  allow="autoplay; fullscreen"
+                />
+              )}
             </div>
             <p className="mt-3 text-center text-xs text-slate-500">
-              Tip: use the controls to jump between chapters or unmute the narration.
+              Tip: use the controls to play/pause, jump between chapters, or unmute the narration.
             </p>
           </div>
         </Section>

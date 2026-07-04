@@ -42,14 +42,16 @@ export default function VideoTemplate({
   durations = SCENE_DURATIONS,
   loop = true,
   muted = false,
+  paused = false,
   onSceneChange,
 }: {
   durations?: Record<string, number>;
   loop?: boolean;
   muted?: boolean;
+  paused?: boolean;
   onSceneChange?: (sceneKey: string) => void;
 } = {}) {
-  const { currentScene, currentSceneKey } = useVideoPlayer({ durations, loop });
+  const { currentScene, currentSceneKey } = useVideoPlayer({ durations, loop, paused });
 
   useEffect(() => {
     onSceneChange?.(currentSceneKey);
@@ -69,8 +71,18 @@ export default function VideoTemplate({
     if (Math.abs(audio.currentTime - targetTime) > AUDIO_SEEK_EPSILON_SEC) {
       audio.currentTime = targetTime;
     }
-    audio.play().catch(() => {});
-  }, [currentSceneKey, baseSceneKey, muted]);
+    if (!paused) audio.play().catch(() => {});
+  }, [currentSceneKey, baseSceneKey, muted, paused]);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (paused) {
+      audio.pause();
+    } else {
+      audio.play().catch(() => {});
+    }
+  }, [paused]);
 
   return (
     <div className="w-full h-screen overflow-hidden relative bg-[#020617]">
