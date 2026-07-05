@@ -1,10 +1,10 @@
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type SVGProps } from 'react';
 import { CheckCircle2, Clock, FileText, ArrowRight } from 'lucide-react';
 
-const ease = [0.16, 1, 0.3, 1];
+const ease: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
-const TaskCard = ({ title, location, priority, delay = 0 }) => {
+const TaskCard = ({ title, location, priority, delay = 0 }: { title: string; location: string; priority: string; delay?: number }) => {
   return (
     <motion.div
       className="bg-white/5 border border-white/10 rounded-xl p-4 mb-3"
@@ -125,6 +125,6 @@ export function Scene5_Tasks() {
 }
 
 // Temporary icon to avoid import issues
-const AlertCircle = (props) => (
+const AlertCircle = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
 );

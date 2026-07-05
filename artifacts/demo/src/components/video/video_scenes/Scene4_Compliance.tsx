@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { ShieldCheck } from 'lucide-react';
 
-const ease = [0.16, 1, 0.3, 1];
+const ease: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
 export function Scene4_Compliance() {
   const [phase, setPhase] = useState(0);
@@ -18,7 +18,7 @@ export function Scene4_Compliance() {
     return () => timers.forEach(t => clearTimeout(t));
   }, []);
 
-  const heatmapData = [
+  const heatmapData: ('green' | 'yellow' | 'red')[][] = [
     ['green', 'green', 'yellow', 'green', 'red'],
     ['green', 'green', 'green', 'green', 'green'],
     ['yellow', 'green', 'yellow', 'green', 'green'],

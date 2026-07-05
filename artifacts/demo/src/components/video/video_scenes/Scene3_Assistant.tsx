@@ -2,9 +2,9 @@ import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { Sparkles, Bot, User } from 'lucide-react';
 
-const ease = [0.16, 1, 0.3, 1];
+const ease: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
-const TypewriterText = ({ text, delay = 0, onComplete = () => {} }) => {
+const TypewriterText = ({ text, delay = 0, onComplete = () => {} }: { text: string; delay?: number; onComplete?: () => void }) => {
   const [displayedText, setDisplayedText] = useState('');
   
   useEffect(() => {

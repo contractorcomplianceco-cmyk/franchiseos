@@ -1,10 +1,10 @@
 import { motion, useAnimation, useMotionValue, useTransform, animate } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { LayoutDashboard, AlertTriangle, TrendingUp, Users, ArrowRight } from 'lucide-react';
+import { LayoutDashboard, AlertTriangle, TrendingUp, Users, ArrowRight, type LucideIcon } from 'lucide-react';
 
-const ease = [0.16, 1, 0.3, 1];
+const ease: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
-const StatCard = ({ title, target, icon: Icon, delay = 0, suffix = '' }) => {
+const StatCard = ({ title, target, icon: Icon, delay = 0, suffix = '' }: { title: string; target: number; icon: LucideIcon; delay?: number; suffix?: string }) => {
   const count = useMotionValue(0);
   const rounded = useTransform(count, Math.round);
   const [displayCount, setDisplayCount] = useState(0);
@@ -38,7 +38,7 @@ const StatCard = ({ title, target, icon: Icon, delay = 0, suffix = '' }) => {
   );
 };
 
-const AlertRow = ({ severity, title, time, delay }) => {
+const AlertRow = ({ severity, title, time, delay }: { severity: 'critical' | 'warning' | 'info'; title: string; time: string; delay: number }) => {
   const colors = {
     critical: 'bg-error',
     warning: 'bg-warning',

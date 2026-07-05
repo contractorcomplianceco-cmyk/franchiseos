@@ -2,3 +2,4 @@
 - [video-js scene pause/resume](video-js-scene-pause-resume.md) — pausing the useVideoPlayer timer must track remaining time (refs), not restart the scene, or visuals desync from resumed audio.
 - [video-js visual pause via WAAPI](video-js-visual-pause-waapi.md) — freezing the timer/audio isn't enough; pause framer-motion+CSS anims via document.getAnimations() scoped to root, re-applied on interval.
 - [video-js demo iframed vs export](video-js-demo-iframed-vs-export.md) — /demo/ direct = bare template (no controls, scene 0); controls only when iframed in landing. Verify a scene via temp activeIndex + landing screenshot.
+- [video-js demo typecheck](demo-video-typecheck.md) — DOM lib + Easing tuple + Variants `as const`; PORT env needed for build, not a code bug.

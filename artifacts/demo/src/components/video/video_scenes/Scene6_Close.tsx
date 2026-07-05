@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import logoFull from '@assets/fios_logo_full.png';
 
-const ease = [0.16, 1, 0.3, 1];
+const ease: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
 type Tier = 'ready' | 'watch' | 'hold';
 
