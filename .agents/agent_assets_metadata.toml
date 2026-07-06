@@ -48,3 +48,9 @@ id = "gd-UwzDaW4kvDjocxPCrt"
 uri = "file://HANDOFF.md"
 type = "text"
 title = "FranchiseIntelligenceOS — Engineering Handoff (Cursor)"
+
+[[outputs]]
+id = "uS_ejTferqV1znsJYhSVa"
+uri = "file://Rose to Carmen Project IT Spec Handoff and Go-Live Onboarding.docx"
+type = "word_document"
+title = "Rose to Carmen Project IT Spec Handoff and Go-Live Onboarding"
